@@ -1,0 +1,6 @@
+@SolarVolt_HostAddress = http://localhost:5223
+
+GET {{SolarVolt_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
