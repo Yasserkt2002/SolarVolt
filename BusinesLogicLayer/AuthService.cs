@@ -17,7 +17,6 @@ namespace BusinessLogicLayer
     {
 
         private readonly ApplicationDbContext _context;  //للتعامل مع قاعدة البيانات
-        private readonly AuthService _authService;       // BCrypt و JWT للتعامل مع 
 
 
 
@@ -54,14 +53,39 @@ namespace BusinessLogicLayer
         
         public async Task<string> RegisterAsync( UserRegisterDto model)
         {
-            // التأكد إذا الإيميل موجود مسبقاً
-            if (await _context.Users.AnyAsync(u => u.Email.ToLower() == model.Email.ToLower()))
+            // مرّ على كل مستخدم في الجدول إذا وجدت واحد إيميله يساوي المدخل رجع ترو
+            if (await _context.Users.AnyAsync(/*Note1*/u => u.Email.ToLower() == model.Email.ToLower())) //_context.Users تمثيل مباشر للجدول داخل الكود،
             { 
                 return "Email_Exists";
             }
 
+
+
+            /*Note1
+                   u    من وين اجت
+                  !؟ 
+                أنت ما قلت:
+                foreach (var x in Users)
+                لكن
+                 LINQ 
+                داخليًا يفعل شيء مشابه.
+             */
+            //LINQ = Language Integrated Query
+            // طريقة تكتب فيها “استعلامات على البيانات” داخل
+            // C#
+            // بدل
+            // SQL
+
+            /*ex
+             بدل ما تكتب SQL:
+                SELECT * FROM Users WHERE Email = 'x'
+                تكتب C#:
+                _context.Users.Where(u => u.Email == "x")
+              */
+
+
             // تشفير الباسورد قبل الحفظ
-           // var hashedPassword = _authService.HashPassword(model.Password);
+            // var hashedPassword = _authService.HashPassword(model.Password);
 
 
 
@@ -79,8 +103,9 @@ namespace BusinessLogicLayer
                
             };
 
-            _context.Users.Add(newUser);
-            await _context.SaveChangesAsync();
+            _context.Users.Add(newUser);       //جهّز هذا المستخدم للإضافة فقط”
+
+            await _context.SaveChangesAsync(); //هنا يصير التنفيذ الحقيقي: “نفّذ كل العمليات اللي جهزتها”
 
             return "تم إنشاء الحساب بنجاح!";
         }
@@ -90,7 +115,7 @@ namespace BusinessLogicLayer
         public async Task<string> LoginAsync( UserLoginDto model)
         {
             // البحث عن المستخدم بالإيميل
-            var user = await _context.Users.FirstOrDefaultAsync(u => u.Email.ToLower() == model.Email.ToLower());
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Email.ToLower() == model.Email.ToLower()); //https://t.me/c/3394009212/2/80 FirstOrDefalutAsyncواخواتها
 
             // إذا المستخدم مو موجود أو الباسورد غلط
             if (user == null) 

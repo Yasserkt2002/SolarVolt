@@ -24,7 +24,7 @@ namespace SolarVolt.Presentation.Controllers
             var result = await _authService.RegisterAsync(model);
 
             if (result == "Email_Exists")
-                return BadRequest(new { message = "الإيميل مسجل مسبقاً بالسيستم!" });
+                return BadRequest(new { message = "الإيميل مسجل مسبقاً (: !" });
 
             return Ok(new { message = "تم إنشاء الحساب بنجاح!" });
         }
