@@ -17,7 +17,6 @@ namespace BusinessLogicLayer
     {
 
         private readonly ApplicationDbContext _context;  //للتعامل مع قاعدة البيانات
-        private readonly AuthService _authService;       // BCrypt و JWT للتعامل مع 
 
 
 
