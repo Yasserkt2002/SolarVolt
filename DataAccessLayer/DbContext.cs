@@ -66,8 +66,7 @@
             modelBuilder.Entity<Category>().Property(c => c.Name).HasMaxLength(100);
 
             // ==========================================
-            // 3. العلاقات المؤكدة والمضافة حديثاً بناءً على الـ ERD
-            // ==========================================
+            // 3. 
 
             // [1] علاقة الـ One-to-One بين الجلسة والتوصية
             modelBuilder.Entity<Recommendation>()

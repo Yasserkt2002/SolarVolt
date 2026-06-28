@@ -1,5 +1,6 @@
 ﻿using BusinessLogicLayer;
 using Microsoft.AspNetCore.Mvc;
+using SolarVolt.DTOs;
 using System.Threading.Tasks;
 using static BusinessLogicLayer.AuthService;
 
@@ -30,7 +31,7 @@ namespace SolarVolt.Presentation.Controllers
         }
 
         [HttpPost("login")]
-        public async Task<IActionResult> Login([FromBody] UserLoginDto model)
+        public async Task<IActionResult>Login([FromBody] UserLoginDto model)
         {
             var token = await _authService.LoginAsync(model);
 

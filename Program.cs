@@ -11,11 +11,16 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+
 //////////////////////////////////////////////////////////////////////////////////////
 //  ”ÃÌ· «·‹ Service «·Œ«’… »«·‹ Authentication
 builder.Services.AddScoped<BusinessLogicLayer.AuthService>();
 ////https://t.me/c/3394009212/2/78
 ///
+
+builder.Services.AddScoped<BusinesLogicLayer.ProductService>();
+
+
 
 // ≈⁄œ«œ Ê ÂÌ∆… Œœ„«  «·‹ JWT Authentication »«·”Ì” „
 var jwtSettings = builder.Configuration.GetSection("Jwt");

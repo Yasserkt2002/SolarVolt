@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
+using SolarVolt.DTOs;
 using SolarVolt.Models;
 using System;
 using System.IdentityModel.Tokens.Jwt;
@@ -17,7 +18,6 @@ namespace BusinessLogicLayer
     {
 
         private readonly ApplicationDbContext _context;  //للتعامل مع قاعدة البيانات
-
 
 
         private readonly IConfiguration _configuration;
@@ -221,22 +221,9 @@ namespace BusinessLogicLayer
         }
 
         // --- الـ DTOs اللازمة لنقل البيانات بأمان ---
-        public class UserRegisterDto
-        {
-            public string FirstName { get; set; }
-            public string LastName { get; set; }
-            public string Email { get; set; }
-            public string Password { get; set; }
-            public string Phone { get; set; }
+       
 
-            public string Address { get; set; }
-        }
-
-        public class UserLoginDto
-        {
-            public string Email { get; set; }
-            public string Password { get; set; }
-        }
+     
 
     }
 }
