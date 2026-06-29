@@ -22,7 +22,9 @@ namespace SolarVolt.Presentation.Controllers
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] UserRegisterDto model)
         {
-            var result = await _authService.RegisterAsync(model);
+            var result = await _authService.RegisterAsync(model);      /*   متزامن     : ( Synchronous )
+    
+                                                                       👉   غير متزامن : ( Asynchronous )   */
 
             if (result == "Email_Exists")
                 return BadRequest(new { message = "الإيميل مسجل مسبقاً (: !" });

@@ -41,6 +41,23 @@ namespace BusinesLogicLayer
             return "تم اضافة المنتج بنجاح";
         }
 
+        public async Task<string> DeleteProduct(int ID)
+        {
+            
+           
+               var res=await _context.Products.FirstOrDefaultAsync(u => u.ProductId == ID);
+            if (res != null)
+            {
+                res.IsDeleted= true;
+                await _context.SaveChangesAsync();
+                return "Deleted";
+            }
+            return null;
+
+             
+            
+        }
+
 
     }
 }

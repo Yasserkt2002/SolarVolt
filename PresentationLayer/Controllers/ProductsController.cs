@@ -25,5 +25,17 @@ namespace SolarVolt.PresentationLayer.Controllers
 
 
         }
+
+
+        [HttpDelete("{ProductID}")] //https://t.me/c/3394009212/2/83     لان النية حذف
+        public async Task<IActionResult> DeleteProduct(int ProductID)
+        {
+            var res=await _productService.DeleteProduct(ProductID);
+            if (res == null)
+            {
+                return BadRequest(new { id = ProductID, m = " Product not existe " });
+            }
+            return Ok(new { res = $"product with ID={ProductID} deleted Succissfuly"});    
+        }
     }
 }
