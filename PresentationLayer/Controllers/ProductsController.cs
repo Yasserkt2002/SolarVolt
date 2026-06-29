@@ -37,5 +37,19 @@ namespace SolarVolt.PresentationLayer.Controllers
             }
             return Ok(new { res = $"product with ID={ProductID} deleted Succissfuly"});    
         }
+
+
+        [HttpPut("{ProductID}")] 
+        public async Task<IActionResult> UpdateProduct([FromBody] ProductAddDto NewProduct, int ProductID)
+        {
+            var res = await _productService.UpdateProduct(NewProduct, ProductID);
+            if (res == null)
+            {
+                return BadRequest(new { id = ProductID, m = " Product  not Updated " });
+            }
+            return Ok(new { res = $"product with ID={ProductID} Updated Succissfuly" });
+        }
+
+
     }
 }

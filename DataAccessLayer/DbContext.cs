@@ -45,7 +45,7 @@
                 .HasColumnType("decimal(18,2)");
 
             modelBuilder.Entity<Product>()
-                .Property(p => p.cost) // تأكد من حالة الأحرف Cost أو cost في الكلاس
+                .Property(p => p.Cost) // تأكد من حالة الأحرف Cost أو cost في الكلاس
                 .HasColumnType("decimal(18,2)");
 
             modelBuilder.Entity<Recommendation>()
@@ -83,7 +83,7 @@
 
             // [3] علاقة الصنف مع المنتجات (Categories -> Products)
             modelBuilder.Entity<Product>()
-                .HasOne(p => p.category)
+                .HasOne(p => p.Category)
                 .WithMany(c => c.products_List)
                 .HasForeignKey(p => p.CategoryID);
 

@@ -28,10 +28,10 @@ namespace BusinesLogicLayer
             Product product = new Product()
                      {
                         Name=NewProduct.Name,
-                        brand=NewProduct.Brand,
+                        Brand=NewProduct.Brand,
                         StockQuantity=NewProduct.StockQuantity, 
                         Description=NewProduct.Description,
-                        cost=NewProduct.Cost,   
+                        Cost=NewProduct.Cost,   
                         WattCapacity    =NewProduct.WattCapacity,   
                         ImagePath ="No Image Yet",    //////////////////////////////////////////////////////////////////////////////////// 
                         CategoryID=NewProduct.CategoryID,   
@@ -56,6 +56,39 @@ namespace BusinesLogicLayer
 
              
             
+        }
+
+        public async Task<string> UpdateProduct(ProductAddDto Product,int ID)
+        {
+            var res=await _context.Products.FirstOrDefaultAsync(   p => p.ProductId == ID);
+
+            if (res == null)
+            {
+                return null;
+            }
+
+            res.Name = Product.Name;
+            res.Brand = Product.Brand;
+            res.StockQuantity = Product.StockQuantity;  
+            res.Description = Product.Description;
+            res.Cost = Product.Cost;
+           res.WattCapacity = Product.WattCapacity; 
+           res.ImagePath = Product.ImagePath;   
+            res.CategoryID = Product.CategoryID;
+
+          /*  Product prod = new Product()   //this is wrong
+            {
+                Brand = Product.Brand,
+                StockQuantity =Product.StockQuantity,
+                Description=Product.Description,                                        //  https://t.me/c/3394009212/2/87
+                CategoryID = Product.CategoryID,                                        //  ليش كود ال
+                Name= Product.Name,                                                        //update 
+                Cost  =Product.Cost,                                                    //  مو متل كود ال 
+                ImagePath=Product.ImagePath,                                            //add 
+                WattCapacity=Product.WattCapacity,                                       // من ناحية انشاء اوبجكت 
+            };          */                                                                   //Product
+            await _context.SaveChangesAsync();
+            return "Updated";
         }
 
 

@@ -6,13 +6,13 @@
         public string Name { get; set; } = string.Empty;
 
 
-        public string brand { get; set; } = string.Empty;   
+        public string Brand { get; set; } = string.Empty;   
 
         public int StockQuantity { get; set; }
 
         public string Description { get; set; } = string.Empty;
 
-        public decimal cost { get; set; }
+        public decimal Cost { get; set; }
 
         public int WattCapacity { get; set; }
 
@@ -21,7 +21,7 @@
         public bool IsDeleted { get; set; }
 
 
-        public Category category { get; set; } = null!;
+        public Category Category { get; set; } = null!;
         //// https://t.me/c/3394009212/2/70
        
 
