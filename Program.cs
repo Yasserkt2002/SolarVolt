@@ -19,6 +19,7 @@ builder.Services.AddScoped<BusinessLogicLayer.AuthService>();
 ///
 
 builder.Services.AddScoped<BusinesLogicLayer.ProductService>();
+builder.Services.AddScoped<BusinesLogicLayer.CategoryService>();
 
 
 
