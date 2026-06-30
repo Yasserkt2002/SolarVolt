@@ -39,5 +39,21 @@ namespace SolarVolt.PresentationLayer.Controllers
             return Ok(new {data= res });
         }
 
+        [HttpDelete("{CategoryID}")]
+        public async Task<IActionResult> DeleteCategory(int CategoryID)
+        {
+            var res=await _CategoryService.DeleteCategory(CategoryID);  
+            
+            if (res == "Not Found")
+            {
+                return NotFound(new { Message ="Category Not Fonund"});
+            }
+            if (res == "Category can't be deleted because it has a products")
+            {
+                return BadRequest(new { Message = "Category can't be deleted because it has a products" });
+            }
+            return Ok(new {data=res});
+        }
+
     }
 }
