@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SolarVolt.DTOs;
+using SolarVolt.Models;
 
 namespace SolarVolt.PresentationLayer.Controllers
 {
@@ -23,11 +24,19 @@ namespace SolarVolt.PresentationLayer.Controllers
             var res = await _CategoryService.AddCategory(CategoryDto);
 
             if (res == "Category Exist")
-                return BadRequest(new { Message = "Category Not added " });
+                return BadRequest(new { Message = "this Category already Exist  " });
 
                 return Ok(new {Message= "Category added Succissfuly" });
             
             
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAllCategories()
+        {
+            var res= await _CategoryService.GetAllCategories();
+        
+            return Ok(new {data= res });
         }
 
     }

@@ -32,5 +32,18 @@ namespace BusinesLogicLayer
             return "Success";
         }
 
+
+        public async Task<List<GetAllCategoriesDTo>> GetAllCategories()
+        {
+            var res = await _context.Categories.Where(c => !c.IsDeleted).Select(c=>new GetAllCategoriesDTo
+            { CategoryID = c.CategoryId,Name=c.Name }).ToListAsync();
+            
+           
+         
+                return res;
+            
+           
+        }
+
     }
 }
