@@ -16,6 +16,8 @@ namespace BusinesLogicLayer
         }
 
      
+
+
         public async Task<string> AddProduct(ProductAddDto NewProduct) // for admin
         {
             bool CategoryExiste = await _context.Categories
@@ -41,6 +43,9 @@ namespace BusinesLogicLayer
             return "تم اضافة المنتج بنجاح";
         }
 
+
+
+
         public async Task<string> DeleteProduct(int ID)
         {
             
@@ -57,6 +62,10 @@ namespace BusinesLogicLayer
              
             
         }
+
+
+
+
 
         public async Task<string> UpdateProduct(ProductAddDto Product,int ID)
         {
@@ -90,6 +99,19 @@ namespace BusinesLogicLayer
             await _context.SaveChangesAsync();
             return "Updated";
         }
+
+
+
+        public async Task<List<Product>> GetAllProducts()
+        {
+            var res=await _context.Products.Where(p=>!p.IsDeleted).ToListAsync(); //_context.Products.ToListAsync();  هيك رح ترجع الكل سواء محذوف او لا     IsDeleted
+
+            return res;
+        }
+
+
+
+
 
 
     }

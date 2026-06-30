@@ -51,5 +51,17 @@ namespace SolarVolt.PresentationLayer.Controllers
         }
 
 
+        [HttpGet]
+        public async Task<IActionResult> GetAllProduct()
+        {
+            var res=await  _productService.GetAllProducts();
+            if (res.Any())
+            {
+                return Ok(new { Message="this is a list of products" ,Data=res});
+            } 
+            return BadRequest(new { m = "  ): no products returned" });
+        }
+
+
     }
 }
