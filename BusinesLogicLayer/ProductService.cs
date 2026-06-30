@@ -108,9 +108,19 @@ namespace BusinesLogicLayer
             (CategoryID==null||p.CategoryID==CategoryID)).ToListAsync();        //_context.Products.ToListAsync();  هيك رح ترجع الكل سواء محذوف او لا     IsDeleted
 
             return res;
+        } 
+
+
+
+        public async Task<Product> GetProductByID(int ProductID)
+        {
+            var res = await _context.Products.FirstOrDefaultAsync(p=>p.ProductId==ProductID&&!p.IsDeleted);
+            if (res == null)
+            {
+                return null;
+            }
+            else return res;
         }
-
-
 
 
 

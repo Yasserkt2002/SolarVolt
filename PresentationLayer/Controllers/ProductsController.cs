@@ -52,7 +52,7 @@ namespace SolarVolt.PresentationLayer.Controllers
 
 
         [HttpGet]  //https://t.me/c/3394009212/2/121    //  [HttpGet("{CategoryID}")] ليش مو       //https://t.me/c/3394009212/2/122
-        public async Task<IActionResult> GetAllProduct(int? CategoryID = null)
+        public async Task<IActionResult> GetAllProduct(int? CategoryID = null)    //(int? CategoryID = null)  <=== query param
         {
             var res=await  _productService.GetAllProducts(CategoryID);
             if (res.Any())
@@ -60,6 +60,15 @@ namespace SolarVolt.PresentationLayer.Controllers
                 return Ok(new { Message="this is a list of products" ,Data=res});
             } 
             return BadRequest(new { m = "  ): no products returned" });
+        }
+
+        [HttpGet("{ProductID}")]
+        public async Task<IActionResult> GetProductByID(int ProductID)
+        {
+            var res=await _productService.GetProductByID(ProductID);  
+            if(res!=null)
+                return Ok(new { data=res });
+            return BadRequest(new { m = "error" });
         }
 
 
