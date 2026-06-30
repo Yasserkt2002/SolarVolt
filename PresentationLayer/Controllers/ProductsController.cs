@@ -51,10 +51,10 @@ namespace SolarVolt.PresentationLayer.Controllers
         }
 
 
-        [HttpGet]
-        public async Task<IActionResult> GetAllProduct()
+        [HttpGet]  //https://t.me/c/3394009212/2/121    //  [HttpGet("{CategoryID}")] ليش مو       //https://t.me/c/3394009212/2/122
+        public async Task<IActionResult> GetAllProduct(int? CategoryID = null)
         {
-            var res=await  _productService.GetAllProducts();
+            var res=await  _productService.GetAllProducts(CategoryID);
             if (res.Any())
             {
                 return Ok(new { Message="this is a list of products" ,Data=res});

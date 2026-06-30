@@ -102,9 +102,10 @@ namespace BusinesLogicLayer
 
 
 
-        public async Task<List<Product>> GetAllProducts()
+        public async Task<List<Product>> GetAllProducts(int? CategoryID=null)
         {
-            var res=await _context.Products.Where(p=>!p.IsDeleted).ToListAsync(); //_context.Products.ToListAsync();  هيك رح ترجع الكل سواء محذوف او لا     IsDeleted
+            var res=await _context.Products.Where(p=>!p.IsDeleted &&
+            (CategoryID==null||p.CategoryID==CategoryID)).ToListAsync();        //_context.Products.ToListAsync();  هيك رح ترجع الكل سواء محذوف او لا     IsDeleted
 
             return res;
         }
