@@ -39,6 +39,18 @@ namespace SolarVolt.PresentationLayer.Controllers
             return Ok(new {data= res });
         }
 
+        
+        [HttpGet("{CategoryID}")]
+        public async Task<IActionResult> GetCategoryByID(int CategoryID)
+        {
+            var res = await _CategoryService.GetCategoryByID(CategoryID);
+            if (res == null)
+                return NotFound(new { Message="No Category Found"});
+           
+
+            return Ok(new { data = res });
+        }
+
         [HttpDelete("{CategoryID}")]
         public async Task<IActionResult> DeleteCategory(int CategoryID)
         {
@@ -54,6 +66,18 @@ namespace SolarVolt.PresentationLayer.Controllers
             }
             return Ok(new {data=res});
         }
+
+        [HttpPut("{CategoryID}")]
+        public async Task<IActionResult> UpdateCategory(UpdateCategoryDTo categoryDTo,int CategoryID)
+        {
+            var res =await _CategoryService.UpdateCategory(categoryDTo, CategoryID);
+            if (res == " Category Dose not Updated")
+            {
+                return NotFound(new { Message = " Category Not Found" });
+            }
+            return Ok(new { Message = "Category Updated" });
+        }
+
 
     }
 }

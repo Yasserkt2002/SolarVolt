@@ -20,9 +20,9 @@ namespace BusinesLogicLayer
 
         public async Task<string> AddProduct(ProductAddDto NewProduct) // for admin
         {
-            bool CategoryExiste = await _context.Categories
-                .AnyAsync(u => u.CategoryId == NewProduct.CategoryID);
-            if (!CategoryExiste)
+            bool CategoryExists = await _context.Categories
+                .AnyAsync(u => u.CategoryId == NewProduct.CategoryID&&!u.IsDeleted);
+            if (!CategoryExists)
             {
                 return "الفئة غير موجودة";
             }

@@ -15,7 +15,7 @@ namespace SolarVolt.PresentationLayer.Controllers
         {
             _productService = productService;
         }
-        [HttpPost("AddProduct")]
+        [HttpPost]
         public async Task<IActionResult> AddProduct([FromBody] ProductAddDto NewProduct)
         {
             var res = await _productService.AddProduct(NewProduct);

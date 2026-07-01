@@ -41,6 +41,19 @@ namespace BusinesLogicLayer
             return res;
         }
 
+        public async Task<GetCategoryByIdDTo> GetCategoryByID(int CategoryId)
+        {                                                                       /*https://t.me/c/3394009212/2/125 More performance 
+                                                                                    بدل من جلب الكل تجلب العامود الذي تحتاجه فقط    */
+            var res = await _context.Categories.
+                FirstOrDefaultAsync(c => c.CategoryId == CategoryId && !c.IsDeleted);
+            if (res == null)
+                return null;
+            return new GetCategoryByIdDTo()
+            {
+                CategoryID = res.CategoryId,
+                Name = res.Name,
+            };
+        }
         public async Task<string> DeleteCategory(int CategoryID)     //Re//////////////////////////////////////////////////////////////////////////////////////////////////////////////
         {
             var res = await _context.Categories.FirstOrDefaultAsync(c => c.CategoryId == CategoryID&&!c.IsDeleted);
@@ -56,6 +69,20 @@ namespace BusinesLogicLayer
                 await _context.SaveChangesAsync();
                 return "Deleted";
             
+        }
+
+
+        public async Task<string> UpdateCategory(UpdateCategoryDTo categoryDTo,int CategoryID)
+        {
+            var res = await _context.Categories.FirstOrDefaultAsync(c=>c.CategoryId== CategoryID && !c.IsDeleted);
+            if (res == null)
+                return " Category Not Found";
+            res.Name=categoryDTo.Name;
+
+
+            await _context.SaveChangesAsync();
+            return "Category Updated";
+
         }
     }
 }
