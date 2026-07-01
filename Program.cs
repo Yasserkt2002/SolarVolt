@@ -1,7 +1,8 @@
 using DataAccessLayer;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using BusinesLogicLayer;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -20,7 +21,7 @@ builder.Services.AddScoped<BusinessLogicLayer.AuthService>();
 
 builder.Services.AddScoped<BusinesLogicLayer.ProductService>();
 builder.Services.AddScoped<BusinesLogicLayer.CategoryService>();
-
+builder.Services.AddScoped<BusinesLogicLayer.Product_UnitsService>();
 
 
 // ≈⁄œ«œ Ê ÂÌ∆… Œœ„«  «·‹ JWT Authentication »«·”Ì” „
