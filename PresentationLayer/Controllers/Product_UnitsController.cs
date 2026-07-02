@@ -50,5 +50,14 @@ namespace SolarVolt.PresentationLayer.Controllers
             return Ok(new { Message = "Status Change Succissfuly" });
         }
 
+
+        [HttpGet("{Product_UnitID}")]
+        public async Task<IActionResult> GetProduct_UnitByID( int Product_UnitID)
+        {
+            var product_unit= await _product_UnitsService.GetProduct_UnitByID(Product_UnitID);
+            if (product_unit == null)
+                return NotFound(new { Message = "Product_Unit or Product not found" });
+            return Ok(new { Message="Product_Unit Found",data= product_unit });
+        }
     }
 }

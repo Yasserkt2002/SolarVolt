@@ -54,10 +54,8 @@ namespace BusinesLogicLayer
         public async Task<bool> ChangeProduct_UnitStatus(int Product_UnitID, UpdatedProduct_UnitStatusDTo NewStatus)
         {
             var product_unit = await _context.Product_Units.FirstOrDefaultAsync(pu=>pu.Product_UnitId== Product_UnitID); ///////////////////  &&pu.Status!=UnitStatus.Deleted    /////////////////////////////////
-            if (product_unit ==null)
-            {
-                return false;
-            }
+            if (product_unit ==null) return false;
+            
 
             var product = await _context.Products.FirstOrDefaultAsync(p => p.ProductId == product_unit.ProductID && !p.IsDeleted);
             if (product == null) return false;
@@ -75,6 +73,22 @@ namespace BusinesLogicLayer
             await _context.SaveChangesAsync();  
             return true;
 
+        }
+
+        public async Task<GetCategory_UnitByIDDTo> GetProduct_UnitByID( int product_UnitID)             /////   //alot of logic
+        {
+            var product_unit = await _context.Product_Units.FirstOrDefaultAsync(pu => pu.Product_UnitId == product_UnitID && pu.Status!=UnitStatus.Deleted);
+            if (product_unit == null) return null;
+            var product = await _context.Products.FirstOrDefaultAsync(p=>p.ProductId== product_unit.ProductID&&!p.IsDeleted);
+            if (product == null) return null;
+
+            return new GetCategory_UnitByIDDTo()
+            {
+                Product_UnitID = product_UnitID,
+                ProductID = product_unit.ProductID,
+                ProductName = product.Name,
+                unitStatus = product_unit.Status.ToString(),
+            };
         }
 
     }
