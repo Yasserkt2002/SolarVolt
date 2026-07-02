@@ -59,5 +59,15 @@ namespace SolarVolt.PresentationLayer.Controllers
                 return NotFound(new { Message = "Product_Unit or Product not found" });
             return Ok(new { Message="Product_Unit Found",data= product_unit });
         }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAllProduct_Unit()
+        {
+            var Product_UnitsList=await _product_UnitsService.GetAllProduct_Unit();
+            if (Product_UnitsList == null)
+                return NotFound(new { Message = "Products or Product_Units not found" });
+            return Ok(new { Message = "Data Found",Data= Product_UnitsList });
+        }
+
     }
 }

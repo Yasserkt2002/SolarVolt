@@ -75,7 +75,7 @@ namespace BusinesLogicLayer
 
         }
 
-        public async Task<GetCategory_UnitByIDDTo> GetProduct_UnitByID( int product_UnitID)             /////   //alot of logic
+        public async Task<GetCategory_UnitByIDDTo> GetProduct_UnitByID( int product_UnitID)             /////   //alot of logic 
         {
             var product_unit = await _context.Product_Units.FirstOrDefaultAsync(pu => pu.Product_UnitId == product_UnitID && pu.Status!=UnitStatus.Deleted);
             if (product_unit == null) return null;
@@ -91,5 +91,23 @@ namespace BusinesLogicLayer
             };
         }
 
+        public async Task<List<GetAllProduct_UnitDTo>> GetAllProduct_Unit()     /////   //alot of logic https://t.me/c/3394009212/2/127 pu.product.IsDeleted , Select شرح عن///////////////////////////////////////////////////////
+        {
+            var product_UnitList=await _context.Product_Units.
+                Where(pu=>pu.Status!=UnitStatus.Deleted&&!pu.product.IsDeleted).
+                Select(pu => new GetAllProduct_UnitDTo()
+                {
+                    Product_UnitID = pu.Product_UnitId,
+                    ProductID=pu.ProductID,
+                    ProductName=pu.product.Name,
+                    unitStatus=pu.Status.ToString(),
+
+                }).ToListAsync(); 
+            
+            if (!product_UnitList.Any())
+                return null;
+            
+            return product_UnitList;
+        }
     }
 }
