@@ -51,5 +51,31 @@ namespace BusinesLogicLayer
             return true;
         }
 
+        public async Task<bool> ChangeProduct_UnitStatus(int Product_UnitID, UpdatedProduct_UnitStatusDTo NewStatus)
+        {
+            var product_unit = await _context.Product_Units.FirstOrDefaultAsync(pu=>pu.Product_UnitId== Product_UnitID); ///////////////////  &&pu.Status!=UnitStatus.Deleted    /////////////////////////////////
+            if (product_unit ==null)
+            {
+                return false;
+            }
+
+            var product = await _context.Products.FirstOrDefaultAsync(p => p.ProductId == product_unit.ProductID && !p.IsDeleted);
+            if (product == null) return false;
+            
+                if (NewStatus.StatusDto == UnitStatus.Available && product_unit.Status != UnitStatus.Available)
+                {
+                    product.StockQuantity++;
+                }
+                else if (NewStatus.StatusDto != UnitStatus.Available && product_unit.Status == UnitStatus.Available)
+                {
+                    product.StockQuantity--;
+                }
+         
+            product_unit.Status = NewStatus.StatusDto;
+            await _context.SaveChangesAsync();  
+            return true;
+
+        }
+
     }
 }

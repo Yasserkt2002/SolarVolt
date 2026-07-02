@@ -3,7 +3,7 @@
 
     public enum UnitStatus
     {
-        Avaliable,
+        Available,
         Sold,
         Damage,
         Deleted

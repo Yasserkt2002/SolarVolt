@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SolarVolt.DTOs;
+using SolarVolt.Models;
 
 namespace SolarVolt.PresentationLayer.Controllers
 {
@@ -35,6 +36,18 @@ namespace SolarVolt.PresentationLayer.Controllers
        
                 return Ok(new { Message = "deleted Succissfuly" });
             
+        }
+
+
+        [HttpPut("{Product_UnitID}")]
+        public async Task<IActionResult> ChangeProduct_UnitStatus(int Product_UnitID,[FromBody] UpdatedProduct_UnitStatusDTo status)
+        {
+            bool IsUpdated =await _product_UnitsService.ChangeProduct_UnitStatus(Product_UnitID, status);
+            if (!IsUpdated)
+            {
+                return NotFound(new {Message="Product or Product_unit not Found" });
+            }
+            return Ok(new { Message = "Status Change Succissfuly" });
         }
 
     }
