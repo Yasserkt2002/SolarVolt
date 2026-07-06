@@ -126,7 +126,7 @@ namespace BusinessLogicLayer
             if (!VerifyPassword(model.Password, user.PasswordHash))
                 return null;
 
-            return GenerateJwtToken(user.UserID.ToString(), user.Email, user.Role);
+            return GenerateJwtToken(user.UserID, user.Email, user.Role);
             // توليد الـ JWT Token وتمريره للفرونت
          //   var token = _authService.GenerateJwtToken(user.UserID.ToString(), user.Email, user.Role);
 
@@ -158,7 +158,7 @@ namespace BusinessLogicLayer
          //   إنشاء "بطاقة دخول"
         //(JWT)
         //للمستخدم بعد ما يسجّل دخول بنجاح
-        public string GenerateJwtToken(string userId, string email, string role)
+        public string GenerateJwtToken(int userId, string email, string role)
         {
 
             // جيب من 
@@ -191,7 +191,7 @@ namespace BusinessLogicLayer
             // Claims (بيانات الهوية داخل التوكن)
             var claims = new[]
             {                                                  //ex 
-                new Claim(ClaimTypes.NameIdentifier, userId),   //{  "userId": "5", 
+                new Claim(ClaimTypes.NameIdentifier, userId.ToString()),   //{  "userId": "5", 
                 new Claim(ClaimTypes.Email, email),             //   "email": "test@test.com",
                 new Claim(ClaimTypes.Role, role)                //     "role": "Admin"          }
             }; 

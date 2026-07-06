@@ -22,6 +22,7 @@ builder.Services.AddScoped<BusinessLogicLayer.AuthService>();
 builder.Services.AddScoped<BusinesLogicLayer.ProductService>();
 builder.Services.AddScoped<BusinesLogicLayer.CategoryService>();
 builder.Services.AddScoped<BusinesLogicLayer.Product_UnitsService>();
+builder.Services.AddScoped<BusinesLogicLayer.OrderService>();
 
 
 // ÅÚÏÇÏ æÊåíÆÉ ÎÏãÇÊ ÇáÜ JWT Authentication ÈÇáÓíÓÊã
