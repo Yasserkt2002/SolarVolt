@@ -16,7 +16,7 @@ namespace BusinesLogicLayer
             _context = context;
         }
 
-        public async Task<ValidationResult> IsProductExists(CreateOrderDTo OrderDto, List<Product> productsListIDSelectedDB)   /////////// alot of logic //https://t.me/c/3394009212/2/131 شرح الدالة مع الاخطاء التي عملتا
+        public async Task<ValidationResult> IsProductExists(CreateOrderDTo OrderDto, List<Product> SelectedProducts)   /////////// alot of logic //https://t.me/c/3394009212/2/131 شرح الدالة مع الاخطاء التي عملتا
         {
             // List<int> ProductIDs = OrderDto.OrderItems.Select(p => p.ProductID).ToList();
 
@@ -24,7 +24,7 @@ namespace BusinesLogicLayer
 
             foreach (var p in OrderDto.OrderItems)
             {
-                var product = productsListIDSelectedDB.FirstOrDefault(x => x.ProductId == p.ProductID); // تبحث عن المنتج المطابق
+                var product = SelectedProducts.FirstOrDefault(x => x.ProductId == p.ProductID); // تبحث عن المنتج المطابق
 
                 if (product == null)
                 {
@@ -40,7 +40,7 @@ namespace BusinesLogicLayer
             return results;
         }
 
-        public async Task<ValidationResult> IsProductQuantityAvailable(CreateOrderDTo OrderDto, List<Product> productsListIDSelectedDB)
+        public async Task<ValidationResult> IsProductQuantityAvailable(CreateOrderDTo OrderDto, List<Product> SelectedProducts)
         {
             //كود قديم قبل التحسينhttps://t.me/c/3394009212/2/132
 
@@ -48,7 +48,7 @@ namespace BusinesLogicLayer
 
             foreach (var item in OrderDto.OrderItems)
             {
-                var product = productsListIDSelectedDB.FirstOrDefault(p => p.ProductId == item.ProductID);
+                var product = SelectedProducts.FirstOrDefault(p => p.ProductId == item.ProductID);
 
                 // حماية من
                 // null 
@@ -80,64 +80,70 @@ namespace BusinesLogicLayer
         public async Task<ValidationResult> CreateOrder(CreateOrderDTo OrderDto, int UserID)
         {
             List<int> ProductIDsList = GetProductIDsList(OrderDto);
-
             //تأخذ فقط IDs من الفرونت
 
-            var productsIDsListSelectedDB = await _context.Products
+            var SelectedProducts = await _context.Products
                 .Where(p => ProductIDsList.Contains(p.ProductId) && !p.IsDeleted)
                 .ToListAsync(); //تجلب فقط المنتجات المطلوبة (بدون تحميل كل الداتابيز)
 
-            ValidationResult validationProductExists = await IsProductExists(OrderDto, productsIDsListSelectedDB);
+            ValidationResult validationProductExists = await IsProductExists(OrderDto, SelectedProducts);
 
             if (!validationProductExists.IsValid)
             {
                 return validationProductExists;
             }
 
-            ValidationResult validationQuantityAvailable = await IsProductQuantityAvailable(OrderDto, productsIDsListSelectedDB);
+            ValidationResult validationQuantityAvailable = await IsProductQuantityAvailable(OrderDto, SelectedProducts);
 
             if (!validationQuantityAvailable.IsValid)
             {
                 return validationQuantityAvailable;
             }
 
-
-            Order order = new Order()
+            var transaction=await _context.Database.BeginTransactionAsync();
+            try
             {
-                UserID = UserID,
-                OrderDate = DateTime.Now,
-                Status = "Pending",
-                TotalCost = 0,
-               
-            };
-            Console.WriteLine("i am before foreach and after Order =new Order");
-
-            await _context.Orders.AddAsync(order);
 
 
-            // اطبعهون قبل حلقة الـ foreach مباشرة
-            Console.WriteLine($"👉 DB Products Count: {productsIDsListSelectedDB.Count}");
-            Console.WriteLine($"👉 DTO Items Count: {OrderDto.OrderItems.Count}");
-
-            foreach (var itemDto in OrderDto.OrderItems)
-            {
-                var product = productsIDsListSelectedDB.FirstOrDefault(p => p.ProductId == itemDto.ProductID);
-                if (product != null)
+                Order order = new Order()
                 {
-                    order.TotalCost += product.Cost * itemDto.Quantity;
-                    product.StockQuantity-=itemDto.Quantity;
-                    Order_Item order_Item = new Order_Item()
-                    {
-                        ProductID = product.ProductId,
-                        Quantity = itemDto.Quantity,
-                        Price = product.Cost, // price at sell
-                        order = order
-                    };
-                    await _context.Order_Items.AddAsync(order_Item); 
-                }
-            }
-            await _context.SaveChangesAsync();  
+                    UserID = UserID,
+                    OrderDate = DateTime.Now,
+                    Status = "Pending",
+                    TotalCost = 0,
 
+                };
+
+                await _context.Orders.AddAsync(order); //الContext صار يراقب هذا الكائن     
+                                                       // order.TotalCost += product.Cost * itemDto.Quantity; لاحقا عند هذا السطر بيعدلو من حالو
+
+
+
+                foreach (var itemDto in OrderDto.OrderItems)
+                {
+                    var product = SelectedProducts.FirstOrDefault(p => p.ProductId == itemDto.ProductID);//يعني بتقارن كل عناصر اللست مع العنصر المقابل وبتكرر المقارنة كل دورة 
+                    if (product != null)                                                                 //foreach
+                    {
+                        order.TotalCost += product.Cost * itemDto.Quantity;
+                        product.StockQuantity -= itemDto.Quantity;
+                        Order_Item order_Item = new Order_Item()
+                        {
+                            ProductID = product.ProductId,
+                            Quantity = itemDto.Quantity,
+                            Price = product.Cost, // price at sell
+                            order = order
+                        };
+                        await _context.Order_Items.AddAsync(order_Item);
+                    }
+                }
+                await _context.SaveChangesAsync();
+                await transaction.CommitAsync();
+            }
+            catch (Exception)
+            {
+                transaction.RollbackAsync();
+                throw;
+            }
             return new ValidationResult { IsValid = true };
         }
 

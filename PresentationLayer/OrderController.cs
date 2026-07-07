@@ -60,12 +60,12 @@ namespace SolarVolt.PresentationLayer
                 {
                     case ProductOrQuanitiy.ProductNotExists:
                         {
-                            return NotFound(new { message="this product not found",res= res.InvalidProductIDs });
+                            return NotFound(new { message="this product not found",IDs= res.InvalidProductIDs });
                         }
                     case ProductOrQuanitiy.QuantityLessThenOrder:
                         {
 
-                            return BadRequest(new { message = " our Quanitiy of this product  Less Then Order ", res = res.InvalidProductIDs });
+                            return BadRequest(new { message = " our Quanitiy of this product  Less Then Order ", IDs = res.InvalidProductIDs });
 
                         }
                 }
