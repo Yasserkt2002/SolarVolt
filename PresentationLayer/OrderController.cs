@@ -73,5 +73,16 @@ namespace SolarVolt.PresentationLayer
             return StatusCode(201,new {message="Order Created Succissfuly" });
 
         }
+
+        [HttpGet("{OrderID}")]
+        public async Task<IActionResult> GetOrderByID(int OrderID)
+        {
+            var res=await _orderService.GetOrderByID(OrderID);    
+            if (res == null)
+            {
+                return NotFound(new { message= $"Order with ID={OrderID} not found" });
+            }
+            return Ok(new { message ="Order Found",OrderDetails=res });
+        }
     }
 }

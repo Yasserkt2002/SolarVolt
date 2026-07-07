@@ -141,10 +141,35 @@ namespace BusinesLogicLayer
             }
             catch (Exception)
             {
-                transaction.RollbackAsync();
+                await transaction.RollbackAsync();
                 throw;
             }
             return new ValidationResult { IsValid = true };
+        }
+
+        public async Task<OrderResponseDTo> GetOrderByID(int OrderID)
+        {
+            
+            var orderSelected =await _context.Orders.Include(i=>i.Order_Items_List).FirstOrDefaultAsync(o=>o.OrderId== OrderID&&o.UserID==1);
+            if (orderSelected == null)
+            {
+                return null;
+            }
+            OrderResponseDTo orderResponseDTo = new OrderResponseDTo()
+            {
+                OrderId = orderSelected.OrderId,
+                OrderDate = orderSelected.OrderDate,
+                TotalCost = orderSelected.TotalCost,
+
+                Order_Items_List = orderSelected.Order_Items_List.Select(o => new OrderItemResponseDTo()
+                {
+                    ProductID = o.ProductID,    
+                    Quantity = o.Quantity,  
+                    Price=o.Price,
+                }).ToList()
+
+            };
+            return orderResponseDTo;
         }
 
     }
