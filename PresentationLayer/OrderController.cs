@@ -50,9 +50,9 @@ namespace SolarVolt.PresentationLayer
           */
 
         [HttpPost]
-        public async Task<IActionResult> CreateOrder([FromBody]CreateOrderDTo OrderDto)
+        public async Task<IActionResult> CreateOrder([FromBody] CreateOrderDTo OrderDto)
         {
-            var res=await _orderService.CreateOrder(OrderDto,/*GetUserID()*/1);
+            var res = await _orderService.CreateOrder(OrderDto,/*GetUserID()*/1);
             if (!res.IsValid)
             {
 
@@ -60,7 +60,7 @@ namespace SolarVolt.PresentationLayer
                 {
                     case ProductOrQuanitiy.ProductNotExists:
                         {
-                            return NotFound(new { message="this product not found",IDs= res.InvalidProductIDs });
+                            return NotFound(new { message = "this product not found", IDs = res.InvalidProductIDs });
                         }
                     case ProductOrQuanitiy.QuantityLessThenOrder:
                         {
@@ -70,19 +70,55 @@ namespace SolarVolt.PresentationLayer
                         }
                 }
             }
-            return StatusCode(201,new {message="Order Created Succissfuly" });
+            return StatusCode(201, new { message = "Order Created Succissfuly" });
 
         }
 
         [HttpGet("{OrderID}")]
         public async Task<IActionResult> GetOrderByID(int OrderID)
         {
-            var res=await _orderService.GetOrderByID(OrderID);    
+            var res = await _orderService.GetOrderByID(OrderID);
             if (res == null)
             {
-                return NotFound(new { message= $"Order with ID={OrderID} not found" });
+                return NotFound(new { message = $"Order with ID={OrderID} not found" });
             }
-            return Ok(new { message ="Order Found",OrderDetails=res });
+            return Ok(new { message = "Order Found", OrderDetails = res });
         }
+
+
+        [HttpGet]
+        public async Task<IActionResult> getAllUserOrders()
+        {
+            var res =await _orderService.getAllUserOrders();
+            if (res == null)
+                return NotFound(new { message = "No Orders Found" });
+            return Ok(new { Orders=res });
+
+        }
+
+
+        [HttpPut("Complete/{OrderID}")]
+        public async Task<IActionResult> CompletedOrder(int OrderID)  // Admin // admin// //
+        {
+            bool IsCompleted =await _orderService.CompletedOrder(OrderID);
+            if (IsCompleted)
+            {
+                return Ok(new {message="Order status Completed" });
+            }
+            return BadRequest(new { message = "Order not found or has been canceled" });
+        }
+
+
+        [HttpPut("Cancel/{OrderID}")]
+        public async Task<IActionResult> CanceledOrder(int OrderID)  // Admin // admin// //
+        {
+            bool IsCanceled = await _orderService.CanceledOrder(OrderID);
+            if (IsCanceled)
+            {
+                return Ok(new { message = "Order status Canceled" });
+            }
+            return BadRequest(new { message = "Order not found or already has been Completed" });
+        }
+
     }
 }

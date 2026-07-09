@@ -8,7 +8,7 @@ namespace SolarVolt.DTOs
         public DateTime OrderDate { get; set; }
 
         public decimal TotalCost { get; set; }
-      //  public string Status { get; set; }
+        public string Status { get; set; }
 
         public List<OrderItemResponseDTo> Order_Items_List { get; set; } = new List<OrderItemResponseDTo>();
 

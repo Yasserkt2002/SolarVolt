@@ -142,7 +142,7 @@ namespace BusinesLogicLayer
             catch (Exception)
             {
                 await transaction.RollbackAsync();
-                throw;
+                return new ValidationResult { IsValid = false }; //throw
             }
             return new ValidationResult { IsValid = true };
         }
@@ -150,7 +150,7 @@ namespace BusinesLogicLayer
         public async Task<OrderResponseDTo> GetOrderByID(int OrderID)
         {
             
-            var orderSelected =await _context.Orders.Include(i=>i.Order_Items_List).FirstOrDefaultAsync(o=>o.OrderId== OrderID&&o.UserID==1);
+            var orderSelected =await _context.Orders.Include(i=>i.Order_Items_List).FirstOrDefaultAsync(o=>o.OrderId== OrderID&&o.UserID== 1   /*     userID     */);   ///////////////////////////////////////////////////////////////////////////////////////////////////userID
             if (orderSelected == null)
             {
                 return null;
@@ -160,6 +160,8 @@ namespace BusinesLogicLayer
                 OrderId = orderSelected.OrderId,
                 OrderDate = orderSelected.OrderDate,
                 TotalCost = orderSelected.TotalCost,
+                Status=orderSelected.Status,
+
 
                 Order_Items_List = orderSelected.Order_Items_List.Select(o => new OrderItemResponseDTo()
                 {
@@ -170,6 +172,56 @@ namespace BusinesLogicLayer
 
             };
             return orderResponseDTo;
+        }
+
+        public async Task<List<GetAllUserOrdersDTo>> getAllUserOrders()
+        {
+            var AllOrders = await _context.Orders.Where(o=>o.UserID== 1    /*     userID     */).Select(o => new GetAllUserOrdersDTo()      ///////////////////////////////////////////////////////////////////////////////////////////////////userID
+            {
+                OrderId = o.OrderId,
+                OrderDate = o.OrderDate,
+                TotalCost = o.TotalCost,
+                Status=o.Status,
+            }).ToListAsync();
+            if (!AllOrders.Any())
+            {
+                return null;
+            }
+            return AllOrders;
+        }
+
+        public async Task<bool> CompletedOrder(int OrderID)
+        {
+            var order = await _context.Orders.FirstOrDefaultAsync(o=>o.OrderId== OrderID);
+            if (order != null && order.Status == "Pending")
+            {
+                order.Status = "Completed";
+                await _context.SaveChangesAsync();
+                return true;
+            }
+            return false;
+
+
+        }
+
+        public async Task<bool> CanceledOrder(int OrderID)
+        {
+
+            var order =await _context.Orders.Include(i => i.Order_Items_List).ThenInclude(p => p.product).FirstOrDefaultAsync(o=>o.OrderId==OrderID);
+            if (order != null && order.Status == "Pending")
+            {
+                foreach (var item in order.Order_Items_List)
+                {
+                    if (item.product != null)
+                    {
+                        item.product.StockQuantity += item.Quantity;
+                    }
+                }
+                order.Status = "Canceled";
+                await _context.SaveChangesAsync();
+                return true;
+            }
+            return false;
         }
 
     }
