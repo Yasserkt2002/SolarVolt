@@ -32,7 +32,7 @@
 
         public List<Product_Unit> Product_Units_List=new List<Product_Unit>();
 
-        public List<Recommendation_Item> Recommendation_Items_List=new List<Recommendation_Item>(); 
+        public List<Recommendation_Item> Recommendation_Items_List { get; set; } = new List<Recommendation_Item>(); 
 
     }
 }

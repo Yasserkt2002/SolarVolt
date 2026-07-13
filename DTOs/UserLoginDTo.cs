@@ -1,8 +1,14 @@
-﻿namespace SolarVolt.DTOs
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace SolarVolt.DTOs
 {
     public class UserLoginDto
     {
-        public string Email { get; set; }
+
+        [Required(ErrorMessage = "رقم الهاتف مطلوب")]
+        public string Phone { get; set; }
+
+        [Required(ErrorMessage = "كلمة السر مطلوبة")]
         public string Password { get; set; }
     }
 }

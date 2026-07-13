@@ -55,8 +55,7 @@
             // 2. تحديد أحجام الـ Strings
             modelBuilder.Entity<User>(entity =>
             {
-                entity.Property(u => u.FirstName).HasMaxLength(50);
-                entity.Property(u => u.LastName).HasMaxLength(50);
+                entity.Property(u => u.FullName).HasMaxLength(50);
                 entity.Property(u => u.Email).HasMaxLength(150);
                 entity.Property(u => u.Phone).HasMaxLength(20);
                 entity.Property(u => u.Role).HasMaxLength(30);

@@ -54,9 +54,9 @@ namespace BusinessLogicLayer
         public async Task<string> RegisterAsync( UserRegisterDto model)
         {
             // مرّ على كل مستخدم في الجدول إذا وجدت واحد إيميله يساوي المدخل رجع ترو
-            if (await _context.Users.AnyAsync(/*Note1*/u => u.Email.ToLower() == model.Email.ToLower())) //_context.Users تمثيل مباشر للجدول داخل الكود،
+            if (await _context.Users.AnyAsync(/*Note1*/u => u.Phone == model.Phone)) //_context.Users تمثيل مباشر للجدول داخل الكود،
             { 
-                return "Email_Exists";
+                return "Phone Exists";
             }
 
 
@@ -92,9 +92,8 @@ namespace BusinessLogicLayer
             // إنشاء كائن المستخدم الجديد
             var newUser = new User
             {
-                FirstName = model.FirstName,
-                LastName = model.LastName,
-                Email = model.Email.ToLower(),
+                FullName = model.FullName,
+                Email = model.Email?.ToLower(),
                 Phone = model.Phone,
                 Address=model.Address,
                 PasswordHash = HashPassword(model.Password),
@@ -115,7 +114,7 @@ namespace BusinessLogicLayer
         public async Task<string> LoginAsync( UserLoginDto model)
         {
             // البحث عن المستخدم بالإيميل
-            var user = await _context.Users.FirstOrDefaultAsync(u => u.Email.ToLower() == model.Email.ToLower()); //https://t.me/c/3394009212/2/80 FirstOrDefalutAsyncواخواتها
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Phone == model.Phone&&!u.IsDeleted); //https://t.me/c/3394009212/2/80 FirstOrDefalutAsyncواخواتها
 
             // إذا المستخدم مو موجود أو الباسورد غلط
             if (user == null) 
@@ -126,7 +125,7 @@ namespace BusinessLogicLayer
             if (!VerifyPassword(model.Password, user.PasswordHash))
                 return null;
 
-            return GenerateJwtToken(user.UserID, user.Email, user.Role);
+            return GenerateJwtToken(user.UserID, user.Phone, user.Role);
             // توليد الـ JWT Token وتمريره للفرونت
          //   var token = _authService.GenerateJwtToken(user.UserID.ToString(), user.Email, user.Role);
 
@@ -158,7 +157,7 @@ namespace BusinessLogicLayer
          //   إنشاء "بطاقة دخول"
         //(JWT)
         //للمستخدم بعد ما يسجّل دخول بنجاح
-        public string GenerateJwtToken(int userId, string email, string role)
+        public string GenerateJwtToken(int userId, string Phone, string role)
         {
 
             // جيب من 
@@ -191,9 +190,9 @@ namespace BusinessLogicLayer
             // Claims (بيانات الهوية داخل التوكن)
             var claims = new[]
             {                                                  //ex 
-                new Claim(ClaimTypes.NameIdentifier, userId.ToString()),   //{  "userId": "5", 
-                new Claim(ClaimTypes.Email, email),             //   "email": "test@test.com",
-                new Claim(ClaimTypes.Role, role)                //     "role": "Admin"          }
+                new Claim(ClaimTypes.NameIdentifier, userId.ToString()),  
+                new Claim(ClaimTypes.MobilePhone, Phone),             
+                new Claim(ClaimTypes.Role, role)               
             }; 
             // اهم شي تغيير
             // climes 

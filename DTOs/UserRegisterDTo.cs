@@ -1,13 +1,20 @@
-﻿namespace SolarVolt.DTOs
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace SolarVolt.DTOs
 {
     public class UserRegisterDto
     {
-        public string FirstName { get; set; }
-        public string LastName { get; set; }
-        public string Email { get; set; }
+        [Required(ErrorMessage = "الاسم مطلوب")]
+        public string FullName { get; set; } = string.Empty;
+        public string? Email { get; set; }
+
+        [Required(ErrorMessage = "كلمة السر مطلوبة")]
+
         public string Password { get; set; }
+
+        [Required(ErrorMessage = "رقم الهاتف مطلوب")]
         public string Phone { get; set; }
 
-        public string Address { get; set; }
+        public string? Address { get; set; }
     }
 }

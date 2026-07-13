@@ -26,8 +26,8 @@ namespace SolarVolt.Presentation.Controllers
     
                                                                        👉   غير متزامن : ( Asynchronous )   */
 
-            if (result == "Email_Exists")
-                return BadRequest(new { message = "الإيميل مسجل مسبقاً (: !" });
+            if (result == "Phone Exists")
+                return BadRequest(new { message = "الهاتف مسجل مسبقاً (: !" });
 
             return Ok(new { message = "تم إنشاء الحساب بنجاح!" });
         }
@@ -38,7 +38,7 @@ namespace SolarVolt.Presentation.Controllers
             var token = await _authService.LoginAsync(model);
 
             if (token == null)
-                return Unauthorized(new { message = "الإيميل أو كلمة المرور غير صحيحة!" });
+                return Unauthorized(new { message = "الهاتف أو كلمة المرور غير صحيحة!" });
 
             return Ok(new { token = token, message = "تم تسجيل الدخول بنجاح!" });
         }
