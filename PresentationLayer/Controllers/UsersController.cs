@@ -43,7 +43,7 @@ namespace SolarVolt.Presentation.Controllers
             return Ok(new { token = token, message = "تم تسجيل الدخول بنجاح!" });
         }
 
-        [HttpPost("Varify-OTP")]
+        [HttpPost("Varify-OTP-Register")]
         public async Task<IActionResult> VarifyOTP(VarifayOTP_DTO model)
         {
             var res =await _authService.VarifyOTP(model);
@@ -54,5 +54,39 @@ namespace SolarVolt.Presentation.Controllers
             return Ok(new { Results=res});
 
         }
+
+        [HttpPost("Send-OTP-Reset")]
+        public async Task<IActionResult> SendResetSms(string phone)
+        {
+           await _authService.SendSms_ForgetPassword(phone);   
+            return Ok(new { messgage=$"Code is sinding to{phone}"});    
+        }
+
+        [HttpGet("Varify-OTP-Reset")]
+        public async Task<IActionResult> VarifyOtpReset(string phone,string code)
+        {
+           var res=await _authService.VarifyResetOTp(phone,code);
+            if (res == null)
+            {
+                return BadRequest( new { message="No phone or code found" });
+            }
+            if (res == "Code already used")
+            {
+                return BadRequest(new { message = "Code already used" });
+            }
+            if (res == "Code Expird")
+            {
+                return BadRequest(new { message = "Code Expird" });
+            }
+            return Ok(new { messgage = "Varifed Succissfuly" });
+        }
+
+        [HttpPost("ResetPassowrd")]
+        public async Task<IActionResult> ResetPassword(string phone, string NewPassword)
+        {
+            await _authService.SetNewPassoword(phone, NewPassword);
+            return Ok(new {message="Password has changed"});
+        }
+
     }
 }

@@ -1,5 +1,7 @@
 ﻿using Microsoft.Identity.Client;
+using SolarVolt.PresentationLayer.Controllers;
 using System.Net.Http.Json;
+using System.Reflection.Metadata.Ecma335;
 namespace SolarVolt.BusinesLogicLayer
 {
     public class SmsService
@@ -30,5 +32,8 @@ namespace SolarVolt.BusinesLogicLayer
             var response = await _httpClient.SendAsync(request);
             return response.IsSuccessStatusCode;
         }
+
+
+        
     }
 }

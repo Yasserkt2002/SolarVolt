@@ -8,8 +8,11 @@
         public DateTime ExpiresAt { get; set; } 
         public bool IsUsed { get; set; }
 
+
+        public bool IsVarified { get; set; }    
+
         //temp info for user
-        public string FullName { get; set; }
-        public string HashPassword { get; set; }
+        public string? FullName { get; set; }
+        public string? HashPassword { get; set; }
     }
 }

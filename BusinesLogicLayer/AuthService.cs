@@ -129,7 +129,7 @@ namespace BusinessLogicLayer
 
 
             string code = _oTPCode.GenerateOtp(); 
-           await _oTPCode.SaveOTp(model.Phone, code,model.FullName, HashPassword(model.Password));
+           await _oTPCode.SaveRegisterOTp(model.Phone, code,model.FullName, HashPassword(model.Password));
             await _smsService.SendSms(model.Phone, $"{model.FullName}\n" +
                 $"مرحبا بك في  SolarVolt (:   كود التحقق : {code}  صالح ل5 دقائق");
 
@@ -267,9 +267,72 @@ namespace BusinessLogicLayer
         }
 
         // --- الـ DTOs اللازمة لنقل البيانات بأمان ---
+
+
+
+
+
+
+
+
+
+
+        //3 func to reset password 
+        public async Task<bool> SendSms_ForgetPassword(string phone)
+        {
+           
+
+            string code=_oTPCode.GenerateOtp();
+            await _oTPCode.SaveResetPassordOTp(phone, code);
+            await _smsService.SendSms(phone ,
+                   $"مرحبا بك في  SolarVolt (:   كود التحقق : {code}  صالح ل5 دقائق");
+            return true;
+        }
+
        
 
-     
+        public async Task<string> VarifyResetOTp(string phone,string code)
+        {
+           var res= await _context.OTPCodes.FirstOrDefaultAsync(o=>o.Phone==phone&&o.Code== code);
+            if (res == null)
+            {
+                return "No phone or code found";
+            }
+            if (res.IsUsed)
+            {
+                return "Code already used";
+            }
+            if (res.ExpiresAt < DateTime.Now)
+            {
+                return "Code Expird";
+            }
+            res.IsVarified = true;
+            await _context.SaveChangesAsync();
+            return "Varifed";
+        }
+
+        public async Task<bool> SetNewPassoword(string phone, string NewPassword)
+        {
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Phone == phone && !u.IsDeleted);
+            if (user == null)
+            {
+                return false;
+            }
+            var otp = await _context.OTPCodes.FirstOrDefaultAsync(o=>o.IsVarified &&
+                                                                    !o.IsUsed &&
+                                                                     o.Phone==phone);
+            if (otp==null)
+            {
+                return false;
+            }
+            user.PasswordHash = HashPassword(NewPassword);
+            otp.IsUsed = true;  
+            await _context.SaveChangesAsync();
+            return true;
+
+        }
+
+
 
     }
 }

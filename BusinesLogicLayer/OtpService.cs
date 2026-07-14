@@ -17,7 +17,7 @@ namespace BusinesLogicLayer
             return Random.Shared.Next(100000,999999).ToString();  
         }
 
-        public async Task SaveOTp(string phone , string code,string FullName,string HashPassword)
+        public async Task SaveRegisterOTp(string phone , string code,string FullName,string HashPassword)
         {
             OTPCode code1 = new OTPCode()
             {
@@ -32,6 +32,20 @@ namespace BusinesLogicLayer
             };
             await _context.OTPCodes.AddAsync(code1);
             await _context.SaveChangesAsync();  
+        }
+
+        public async Task SaveResetPassordOTp(string phone, string code)
+        {
+            OTPCode code1 = new OTPCode()
+            {
+                Phone = phone,
+                Code = code,
+                ExpiresAt = DateTime.Now.AddMinutes(5),
+                IsUsed = false,
+
+            };
+            await _context.OTPCodes.AddAsync(code1);
+            await _context.SaveChangesAsync();
         }
 
     }

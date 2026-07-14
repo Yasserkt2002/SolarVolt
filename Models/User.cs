@@ -9,7 +9,6 @@
         public string Role { get; set; } = string.Empty;
         public bool IsDeleted { get; set; } = false;
 
-        public bool IsActive { get; set; } = false;
 
         public List<Order> Orders_List { get; set; } = new List<Order>();
 
