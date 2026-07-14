@@ -28,7 +28,7 @@
                 public DbSet<Recommendation> Recommendations { get; set; }
                 public DbSet<Recommendation_Item> Recommendation_Items { get; set; }
 
-
+                public DbSet<OTPCode> OTPCodes { get; set; }
 
         //  دالة تجديد حجم العواميد   nvarchar.....
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -56,7 +56,6 @@
             modelBuilder.Entity<User>(entity =>
             {
                 entity.Property(u => u.FullName).HasMaxLength(50);
-                entity.Property(u => u.Email).HasMaxLength(150);
                 entity.Property(u => u.Phone).HasMaxLength(20);
                 entity.Property(u => u.Role).HasMaxLength(30);
             });

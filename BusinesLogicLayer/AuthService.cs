@@ -1,24 +1,31 @@
 ﻿using BCrypt.Net;
+using BusinesLogicLayer;
 using DataAccessLayer;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
+using SolarVolt.BusinesLogicLayer;
 using SolarVolt.DTOs;
 using SolarVolt.Models;
 using System;
 using System.IdentityModel.Tokens.Jwt;
+using System.Reflection.Emit;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace BusinessLogicLayer
 {
+
+
     public class AuthService
     {
 
         private readonly ApplicationDbContext _context;  //للتعامل مع قاعدة البيانات
 
+        private readonly SmsService _smsService;
+        private readonly OtpService _oTPCode;   
 
         private readonly IConfiguration _configuration;
         // حقن الـ
@@ -38,12 +45,14 @@ namespace BusinessLogicLayer
         //يعني:
         //  ASP.NET
         //  يعطيك إعدادات النظام جاهزة بدل ما تنشئها بنفسك
-        public AuthService(ApplicationDbContext context,IConfiguration configuration)
+        public AuthService(ApplicationDbContext context,IConfiguration configuration, SmsService smsService, OtpService oTPCode)
         {
             _context = context;
             _configuration = configuration;
-        }
+            _smsService = smsService;
+            _oTPCode = oTPCode;
 
+        }
 
         public string HashPassword(string password)
         {
@@ -51,6 +60,37 @@ namespace BusinessLogicLayer
         }
 
         
+
+        public async Task<string> VarifyOTP(VarifayOTP_DTO model)
+        {
+           var otp=await _context.OTPCodes.FirstOrDefaultAsync(o=>o.Phone== model.Phone&&( o.Code== model.Code|| model.Code == "654321")&& !o.IsUsed); ///////////////// model.Code == "654321"   ONLY FOR TEST
+            if (otp == null)
+            {
+                return "Invalid OTP";
+            }
+            if (otp.ExpiresAt < DateTime.Now)
+            {
+                return "OTP Expired";
+            }
+
+            // إنشاء كائن المستخدم الجديد
+            var newUser = new User
+            {
+                FullName = otp.FullName,
+                // Email = model.Email?.ToLower(),
+                Phone = otp.Phone,
+                //Address=model.Address,
+                PasswordHash = otp.HashPassword,
+                Role = "Client", // القيمة الافتراضية لأي مستخدم بيسجل من الفرونت
+                IsDeleted = false
+
+            };
+
+            _context.Users.Add(newUser);       //جهّز هذا المستخدم للإضافة فقط”
+            otp.IsUsed = true;
+            await _context.SaveChangesAsync(); //هنا يصير التنفيذ الحقيقي: “نفّذ كل العمليات اللي جهزتها”
+            return "Account Created";
+        }
         public async Task<string> RegisterAsync( UserRegisterDto model)
         {
             // مرّ على كل مستخدم في الجدول إذا وجدت واحد إيميله يساوي المدخل رجع ترو
@@ -88,14 +128,21 @@ namespace BusinessLogicLayer
             // var hashedPassword = _authService.HashPassword(model.Password);
 
 
+            string code = _oTPCode.GenerateOtp(); 
+           await _oTPCode.SaveOTp(model.Phone, code,model.FullName, HashPassword(model.Password));
+            await _smsService.SendSms(model.Phone, $"{model.FullName}\n" +
+                $"مرحبا بك في  SolarVolt (:   كود التحقق : {code}  صالح ل5 دقائق");
 
+
+
+/* //تم النقل الى دالة varifayOTP
             // إنشاء كائن المستخدم الجديد
             var newUser = new User
             {
                 FullName = model.FullName,
-                Email = model.Email?.ToLower(),
+               // Email = model.Email?.ToLower(),
                 Phone = model.Phone,
-                Address=model.Address,
+                //Address=model.Address,
                 PasswordHash = HashPassword(model.Password),
                 Role = "Client", // القيمة الافتراضية لأي مستخدم بيسجل من الفرونت
                 IsDeleted = false
@@ -105,7 +152,7 @@ namespace BusinessLogicLayer
             _context.Users.Add(newUser);       //جهّز هذا المستخدم للإضافة فقط”
 
             await _context.SaveChangesAsync(); //هنا يصير التنفيذ الحقيقي: “نفّذ كل العمليات اللي جهزتها”
-
+*/
             return "تم إنشاء الحساب بنجاح!";
         }
 

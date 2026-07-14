@@ -29,7 +29,7 @@ namespace SolarVolt.Presentation.Controllers
             if (result == "Phone Exists")
                 return BadRequest(new { message = "الهاتف مسجل مسبقاً (: !" });
 
-            return Ok(new { message = "تم إنشاء الحساب بنجاح!" });
+            return Ok(new { message = "تم ارسال كود التحقق!" });
         }
 
         [HttpPost("login")]
@@ -41,6 +41,18 @@ namespace SolarVolt.Presentation.Controllers
                 return Unauthorized(new { message = "الهاتف أو كلمة المرور غير صحيحة!" });
 
             return Ok(new { token = token, message = "تم تسجيل الدخول بنجاح!" });
+        }
+
+        [HttpPost("Varify-OTP")]
+        public async Task<IActionResult> VarifyOTP(VarifayOTP_DTO model)
+        {
+            var res =await _authService.VarifyOTP(model);
+            if (res == "Invalid OTP")
+                return BadRequest(new { message = "Invalid OTP" });
+            if (res == "OTP Expired")
+                return BadRequest(new { message = "OTP Expired" });
+            return Ok(new { Results=res});
+
         }
     }
 }
