@@ -74,7 +74,7 @@ namespace BusinesLogicLayer
             return Math.Round( totalHours,2);
               // بدل ما ترجع كسر طويل مثل 0.333333333333
               // برجعلك 0.33 فقط
-            // لان الديسمل عاملو شي 16 انا
+             // لان الديسمل عاملو شي 16 انا
         }
 
         public async Task<bool> CreateSession(CreateSessionDTO createSessionDTO,int UserID )
