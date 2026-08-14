@@ -6,13 +6,13 @@
         public int SessionID { get; set; }
         public int ApplianceID { get; set; }
         public int Quantity { get; set; }   
-        public int WattOverride { get; set; }
+        public int? WattOverride { get; set; }
 
-
+        public double OperatingHours { get; set; } 
 
         public Energy_Input_Session energy_Input_Session { get; set; } = null!;
 
-        public Appliance appliance =null!;  
+        public Appliance appliance { get; set; } = null!;  
 
     }
 }
