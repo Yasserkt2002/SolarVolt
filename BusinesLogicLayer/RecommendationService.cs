@@ -29,7 +29,6 @@ namespace SolarVolt.BusinesLogicLayer
             {
                 TotalConsumingWh += item.Quantity * (item.OperatingHours) * (item.WattOverride??0);
             }
-             
 
 
             return new RecommendationDTO {  };  //temp
