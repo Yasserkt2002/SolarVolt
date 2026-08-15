@@ -84,7 +84,10 @@ namespace BusinesLogicLayer
 
             foreach (var item in createSessionDTO.Items)
             {
-                int ActualWatt = item.Watt ?? await _context.Appliances.Where(a => a.ApplianceID == item.ApplianceID).Select(a => a.DefaultWattage).FirstOrDefaultAsync();   //ادا كان صفر رح نجيب القيمة الافتراضية من الداتابيز 
+                int ActualWatt = item.Watt ?? await _context.Appliances.
+                    Where(a => a.ApplianceID == item.ApplianceID).
+                    Select(a => a.DefaultWattage).
+                    FirstOrDefaultAsync();   //ادا كان صفر رح نجيب القيمة الافتراضية من الداتابيز 
                 TotalWatt += ActualWatt * item.Quantity;
 
 
@@ -95,7 +98,7 @@ namespace BusinesLogicLayer
                             {
                                 ApplianceID= item.ApplianceID,  
                                 Quantity=item.Quantity,
-                                WattOverride= item.Watt,
+                                WattOverride= ActualWatt,
                                 OperatingHours= ConvertToHours(item.OpeatingTime),
 
                         }
@@ -117,7 +120,36 @@ namespace BusinesLogicLayer
             return true;
         }
 
+        public async Task<GetSessionInfoDTO> GetSessionInfo(int SessionID, int userID)
+        {
+            var res = await _context.Energy_Input_Sessions.
+                Include(s => s.energy_Input_Items_List).
+                FirstOrDefaultAsync(s => s.Energy_Input_SessionID == SessionID&&s.UserID==userID) ;
 
+            if (res == null)
+            {
+                return null;
+            }
+
+            GetSessionInfoDTO SessionInfoDTO = new GetSessionInfoDTO()
+            {
+                EnergyInputSessionID = SessionID,
+                UserID = userID,
+                SourceType = res.SourceType,
+                TotalWatt = res.TotalWatt,
+                TimeCreated = res.CreatedAt,
+                Item = res.energy_Input_Items_List.Select(e => new SessionItemDTO
+                {
+                   ApplianceID= e.ApplianceID ,
+                    Quanitiy= e.Quantity  ,
+                    WattOverride=e.WattOverride??0 ,
+                    OperationHours=e.OperatingHours 
+                }).ToList(),    
+            };
+           
+                return SessionInfoDTO;
+            
+        }
 
     }
 }

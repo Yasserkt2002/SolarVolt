@@ -15,10 +15,10 @@ namespace SolarVolt.PresentationLayer.Controllers
     {
         private readonly SessionService _sessionService;
 
-        public SessionController( SessionService sessionService)
+        public SessionController(SessionService sessionService)
         {
-          
-            _sessionService=sessionService; 
+
+            _sessionService = sessionService;
         }
 
         [HttpPost]
@@ -35,7 +35,7 @@ namespace SolarVolt.PresentationLayer.Controllers
             }
             */
 
-            var res = await _sessionService.CreateSession(SessionDTO,   1         /*                               UserID                  */ );            ////////////////////////////////////////////////
+            var res = await _sessionService.CreateSession(SessionDTO, 1         /*                               UserID                  */ );            ////////////////////////////////////////////////
 
             if (res == true)
             {
@@ -47,5 +47,33 @@ namespace SolarVolt.PresentationLayer.Controllers
             }
 
         }
+
+
+        [HttpGet("{SessionID}")]
+        public async Task<IActionResult> GetSessionByID(int SessionID)
+        {
+            // معلق مؤقتا 
+            /*
+            var UserIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (!int.TryParse(UserIdClaim, out int UserID))
+            {
+                return Unauthorized(new { Message = "User غير مصرح به" });
+            }
+            */
+
+            var res =await _sessionService.GetSessionInfo(SessionID, 1 /*                    UserID                      */);    //         // 
+            if (res == null)
+                return NotFound(new { message="Session not found"});
+            return Ok(new {message="session found", Data=res }); 
+        }
+
+        [HttpGet] // UnComplated
+        public async Task<bool> GetAllSession()
+        {
+            return false;
+        }
+
     }
+
+  
 }
