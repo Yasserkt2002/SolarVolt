@@ -4,7 +4,7 @@
     {
         public int Energy_Input_ItemID { get; set; }    
         public int SessionID { get; set; }
-        public int ApplianceID { get; set; }
+        public int? ApplianceID { get; set; }
         public int Quantity { get; set; }   
         public int? WattOverride { get; set; }
 

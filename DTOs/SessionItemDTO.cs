@@ -2,7 +2,7 @@
 {
     public class SessionItemDTO
     {
-        public int ApplianceID { get; set; }
+        public int? ApplianceID { get; set; }
 
         public int Quanitiy { get; set; }
 

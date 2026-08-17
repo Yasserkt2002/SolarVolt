@@ -77,14 +77,16 @@ namespace BusinesLogicLayer
              // لان الديسمل عاملو شي 16 انا
         }
 
-        public async Task<bool> CreateSession(CreateSessionDTO createSessionDTO,int UserID )
+        public async Task<int> CreateSession(CreateSessionDTO createSessionDTO,int UserID )
         {
             int TotalWatt = 0;
             var SessionItems=new List<Energy_Input_Item>();    
 
             foreach (var item in createSessionDTO.Items)
             {
-                int ActualWatt = item.Watt ?? await _context.Appliances.
+                int ActualWatt = (item.Watt.HasValue && item.Watt > 0) // int ActualWatt = item.Watt ?? await _context.Appliances
+                ? item.Watt.Value                                     //
+                 : await _context.Appliances.                        //
                     Where(a => a.ApplianceID == item.ApplianceID).
                     Select(a => a.DefaultWattage).
                     FirstOrDefaultAsync();   //ادا كان صفر رح نجيب القيمة الافتراضية من الداتابيز 
@@ -96,28 +98,56 @@ namespace BusinesLogicLayer
                     (
                         new Energy_Input_Item()
                             {
-                                ApplianceID= item.ApplianceID,  
-                                Quantity=item.Quantity,
+                            ApplianceID = (item.ApplianceID == 0) ? null : item.ApplianceID,
+                            Quantity =item.Quantity,
                                 WattOverride= ActualWatt,
                                 OperatingHours= ConvertToHours(item.OpeatingTime),
 
                         }
                     );
             }
+
+
+
+            // التشييك على عناصر الجلسة لتحديد نوعها
+            bool hasAppliance = SessionItems.Any(i => i.ApplianceID.HasValue && i.ApplianceID > 0);
+            bool hasManual = SessionItems.Any(i => !i.ApplianceID.HasValue || i.ApplianceID == 0);
+
+            string calculatedSourceType = "Manual";
+            if (hasAppliance && hasManual)
+            {
+                calculatedSourceType = "Mixed"; // 
+            }
+            else if (hasAppliance)
+            {
+                calculatedSourceType = "Preset";
+            }
+
+
+
+            // إسناد النتيجة للـ Session
             Energy_Input_Session energy_Input_Session = new Energy_Input_Session()
             {
-                UserID = 1,              //            //                   //                 //            //          // 
+                UserID = 1,
                 CreatedAt = DateTime.Now,
-                SourceType = createSessionDTO.SourceType,
-                TotalWatt=TotalWatt,
-                energy_Input_Items_List = SessionItems  ,
+                SourceType = calculatedSourceType, // استخدام القيمة المحسوبة بدلاً من createSessionDTO.SourceType
+                TotalWatt = TotalWatt,
+                energy_Input_Items_List = SessionItems
             };
 
+
+
+
+
+
+
+
+         
             await _context.Energy_Input_Sessions.AddAsync(energy_Input_Session);
             await _context.SaveChangesAsync();  
 
 
-            return true;
+            return energy_Input_Session.Energy_Input_SessionID;
         }
 
         public async Task<GetSessionInfoDTO> GetSessionInfo(int SessionID, int userID)

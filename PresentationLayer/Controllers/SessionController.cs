@@ -35,15 +35,15 @@ namespace SolarVolt.PresentationLayer.Controllers
             }
             */
 
-            var res = await _sessionService.CreateSession(SessionDTO, 1         /*                               UserID                  */ );            ////////////////////////////////////////////////
+            int SessionId = await _sessionService.CreateSession(SessionDTO, 1         /*                               UserID                  */ );            ////////////////////////////////////////////////
 
-            if (res == true)
+            if (SessionId > 0)
             {
-                return Ok(new { Message = "Session Created (: " });
+                return Ok(new {SessionId=SessionId, Message = "Session Created (: " });
             }
             else
             {
-                return BadRequest(new { Message = "Session not created ): " });
+                return BadRequest(new { SessionId= SessionId,Message = "Session not created ): " });
             }
 
         }

@@ -17,7 +17,7 @@
 
 
         public int NumberOfBatteries { get; set; }
-        public int RecommendationBettaryAh { get; set; }
+        public int RecommendationBatteryAh { get; set; }
         public string BatteryType { get; set; }
 
 
