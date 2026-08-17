@@ -122,7 +122,7 @@ namespace BusinesLogicLayer
                 // التكلفة والإنتاج
                 EstimatedCost = totalEstimatedCost,
                 MonthlyProductionKWh = Math.Round((requiredSolarWatt * 4.5 * 30) / 1000.0, 1)
-
+                 
             };
         }
     }
