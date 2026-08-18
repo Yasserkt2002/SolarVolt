@@ -181,5 +181,34 @@ namespace BusinesLogicLayer
             
         }
 
+
+
+
+        //AI
+        public async Task<List<EnergyInputSessionDto>> GetAllSessionsAsync()
+        {
+            return await _context.Energy_Input_Sessions
+                .AsNoTracking()
+                .Select(s => new EnergyInputSessionDto
+                {
+                    EnergyInputSessionId = s.Energy_Input_SessionID,
+                    UserId = s.UserID,
+                    UserName = s.user != null ? s.user.FullName : string.Empty, // تعديل اسم الحقل حسب مودل الـ User عندك
+                    SourceType = s.SourceType,
+                    TotalWatt = s.TotalWatt,
+                    CreatedAt = s.CreatedAt,
+                    Items = s.energy_Input_Items_List.Select(i => new EnergyInputItemDto
+                    {
+                        EnergyInputItemId = i.Energy_Input_ItemID,
+                        ApplianceId = i.ApplianceID,
+                        ApplianceName = i.appliance != null ? i.appliance.Name : null, // تعديل اسم الحقل حسب مودل الـ Appliance
+                        Quantity = i.Quantity,
+                        WattOverride = i.WattOverride,
+                        OperatingHours = i.OperatingHours
+                    }).ToList()
+                })
+                .ToListAsync();
+        }
+
     }
 }

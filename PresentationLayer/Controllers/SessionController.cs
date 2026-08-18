@@ -22,6 +22,7 @@ namespace SolarVolt.PresentationLayer.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Client")]
         public async Task<IActionResult> CreateSession(CreateSessionDTO SessionDTO)
         {
 
@@ -50,6 +51,7 @@ namespace SolarVolt.PresentationLayer.Controllers
 
 
         [HttpGet("{SessionID}")]
+        [Authorize(Roles = "Client")]
         public async Task<IActionResult> GetSessionByID(int SessionID)
         {
             // معلق مؤقتا 
@@ -67,12 +69,15 @@ namespace SolarVolt.PresentationLayer.Controllers
             return Ok(new {message="session found", Data=res }); 
         }
 
-        [HttpGet] // UnComplated
-        public async Task<bool> GetAllSession()
-        {
-            return false;
-        }
 
+        //AI
+        [HttpGet("All")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> GetAllSessions()
+        {
+            var sessions = await _sessionService.GetAllSessionsAsync();
+            return Ok(sessions);
+        }
     }
 
   
