@@ -1,4 +1,5 @@
 ﻿using BusinesLogicLayer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SolarVolt.DTOs;
@@ -18,6 +19,7 @@ namespace SolarVolt.PresentationLayer.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles ="Admin")]
         public async Task<IActionResult> AddCategory(CategoryAddDTo CategoryDto)
         {
 
@@ -32,6 +34,7 @@ namespace SolarVolt.PresentationLayer.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = "Admin,Client")]
         public async Task<IActionResult> GetAllCategories()
         {
             var res= await _CategoryService.GetAllCategories();
@@ -41,6 +44,7 @@ namespace SolarVolt.PresentationLayer.Controllers
 
         
         [HttpGet("{CategoryID}")]
+        [Authorize(Roles = "Admin,Client")]
         public async Task<IActionResult> GetCategoryByID(int CategoryID)
         {
             var res = await _CategoryService.GetCategoryByID(CategoryID);
@@ -52,6 +56,7 @@ namespace SolarVolt.PresentationLayer.Controllers
         }
 
         [HttpDelete("{CategoryID}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteCategory(int CategoryID)
         {
             var res=await _CategoryService.DeleteCategory(CategoryID);  
@@ -68,6 +73,7 @@ namespace SolarVolt.PresentationLayer.Controllers
         }
 
         [HttpPut("{CategoryID}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> UpdateCategory(UpdateCategoryDTo categoryDTo,int CategoryID)
         {
             var res =await _CategoryService.UpdateCategory(categoryDTo, CategoryID);

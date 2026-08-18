@@ -204,24 +204,60 @@ namespace BusinesLogicLayer
 
         }
 
-        public async Task<bool> CanceledOrder(int OrderID)
-        {
 
-            var order =await _context.Orders.Include(i => i.Order_Items_List).ThenInclude(p => p.product).FirstOrDefaultAsync(o=>o.OrderId==OrderID);
-            if (order != null && order.Status == "Pending")
+        //verssion 1
+        //public async Task<bool> CanceledOrder(int OrderID)
+        //{
+
+        //    var order =await _context.Orders.Include(i => i.Order_Items_List).ThenInclude(p => p.product).FirstOrDefaultAsync(o=>o.OrderId==OrderID);
+        //    if (order != null && order.Status == "Pending")
+        //    {
+        //        foreach (var item in order.Order_Items_List)
+        //        {
+        //            if (item.product != null)
+        //            {
+        //                item.product.StockQuantity += item.Quantity;
+        //            }
+        //        }
+        //        order.Status = "Canceled";
+        //        await _context.SaveChangesAsync();
+        //        return true;
+        //    }
+        //    return false;
+        //}
+
+        //verssion 2
+        public async Task<bool> CancelOrderAsync(int orderId, int currentUserId, string currentUserRole)
+        {
+            var order = await _context.Orders
+                .Include(i => i.Order_Items_List)
+                .ThenInclude(p => p.product)
+                .FirstOrDefaultAsync(o => o.OrderId == orderId);
+
+            // التحقق من وجود الطلب وحالته
+            if (order == null || order.Status != "Pending")
             {
-                foreach (var item in order.Order_Items_List)
-                {
-                    if (item.product != null)
-                    {
-                        item.product.StockQuantity += item.Quantity;
-                    }
-                }
-                order.Status = "Canceled";
-                await _context.SaveChangesAsync();
-                return true;
+                return false;
             }
-            return false;
+
+            // فحص الأمان: الكلاينت يلغي طلبه فقط، أما الأدمن فيحقل له إلغاء أي طلب
+            if (currentUserRole == "Client" && order.UserID != currentUserId)
+            {
+                return false;
+            }
+
+            // إرجاع الكميات للمخزون
+            foreach (var item in order.Order_Items_List)
+            {
+                if (item.product != null)
+                {
+                    item.product.StockQuantity += item.Quantity;
+                }
+            }
+
+            order.Status = "Canceled";
+            await _context.SaveChangesAsync();
+            return true;
         }
 
     }

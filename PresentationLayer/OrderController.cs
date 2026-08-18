@@ -1,4 +1,5 @@
 ﻿using BusinesLogicLayer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SolarVolt.DTOs;
@@ -50,9 +51,11 @@ namespace SolarVolt.PresentationLayer
           */
 
         [HttpPost]
+        [Authorize(Roles = "Admin,Client")]
+
         public async Task<IActionResult> CreateOrder([FromBody] CreateOrderDTo OrderDto)
         {
-            var res = await _orderService.CreateOrder(OrderDto,/*GetUserID()*/1);
+            var res = await _orderService.CreateOrder(OrderDto,/*GetUserID()*/1);   ////////////////////////////////////////////////////
             if (!res.IsValid)
             {
 
@@ -74,7 +77,9 @@ namespace SolarVolt.PresentationLayer
 
         }
 
+      
         [HttpGet("{OrderID}")]
+        [Authorize(Roles = "Admin,Client")]
         public async Task<IActionResult> GetOrderByID(int OrderID)
         {
             var res = await _orderService.GetOrderByID(OrderID);
@@ -87,6 +92,7 @@ namespace SolarVolt.PresentationLayer
 
 
         [HttpGet]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> getAllUserOrders()
         {
             var res =await _orderService.getAllUserOrders();
@@ -98,6 +104,7 @@ namespace SolarVolt.PresentationLayer
 
 
         [HttpPut("Complete/{OrderID}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> CompletedOrder(int OrderID)  // Admin // admin// //
         {
             bool IsCompleted =await _orderService.CompletedOrder(OrderID);
@@ -109,15 +116,43 @@ namespace SolarVolt.PresentationLayer
         }
 
 
-        [HttpPut("Cancel/{OrderID}")]
-        public async Task<IActionResult> CanceledOrder(int OrderID)  // Admin // admin// //
+
+        //v1
+        //[HttpPut("Cancel/{OrderID}")]
+        //public async Task<IActionResult> CanceledOrder(int OrderID)  // Admin // admin// //
+        //{
+        //    bool IsCanceled = await _orderService.CanceledOrder(OrderID);
+        //    if (IsCanceled)
+        //    {
+        //        return Ok(new { message = "Order status Canceled" });
+        //    }
+        //    return BadRequest(new { message = "Order not found or already has been Completed" });
+        //}
+
+
+
+        [HttpPut("Cancel/{orderId}")]
+        [Authorize(Roles = "Admin,Client")]
+        public async Task<IActionResult> CancelOrder(int orderId)
         {
-            bool IsCanceled = await _orderService.CanceledOrder(OrderID);
-            if (IsCanceled)
+            // استخراج بيانات المستخدم الحالي من الـ JWT Claims
+            var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var userRole = User.FindFirstValue(ClaimTypes.Role);
+
+            if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out int currentUserId))
             {
-                return Ok(new { message = "Order status Canceled" });
+                return Unauthorized(new { message = "Invalid token claims." });
             }
-            return BadRequest(new { message = "Order not found or already has been Completed" });
+
+            // استدعاء الخدمة مع التمرير الصريح للبيانات الأمنية
+            bool isCanceled = await _orderService.CancelOrderAsync(orderId, 1, userRole);           ////////////////////////////////////////////////////////////////////////////////////
+
+            if (isCanceled)
+            {
+                return Ok(new { message = "Order status canceled successfully and stock restored." });
+            }
+
+            return BadRequest(new { message = "Order not found, not owned by user, or cannot be canceled (Not Pending)." });
         }
 
     }
