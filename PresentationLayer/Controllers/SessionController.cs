@@ -21,6 +21,13 @@ namespace SolarVolt.PresentationLayer.Controllers
             _sessionService = sessionService;
         }
 
+        [NonAction]
+        private int GetUserId()
+        {
+            var userIdClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+            return userIdClaim != null ? int.Parse(userIdClaim) : 0;
+        }
+
         [HttpPost]
         [Authorize(Roles = "Client")]
         public async Task<IActionResult> CreateSession(CreateSessionDTO SessionDTO)
@@ -51,7 +58,7 @@ namespace SolarVolt.PresentationLayer.Controllers
 
 
         [HttpGet("{SessionID}")]
-        [Authorize(Roles = "Client")]
+        [Authorize(Roles = "Client,Admin")]
         public async Task<IActionResult> GetSessionByID(int SessionID)
         {
             // معلق مؤقتا 
@@ -63,7 +70,7 @@ namespace SolarVolt.PresentationLayer.Controllers
             }
             */
 
-            var res =await _sessionService.GetSessionInfo(SessionID, 1 /*                    UserID                      */);    //         // 
+            var res =await _sessionService.GetSessionInfo(SessionID, GetUserId() /*                    UserID                      */);    //         // 
             if (res == null)
                 return NotFound(new { message="Session not found"});
             return Ok(new {message="session found", Data=res }); 

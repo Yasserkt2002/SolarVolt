@@ -16,6 +16,14 @@ namespace SolarVolt.PresentationLayer.Controllers
             _recommendationService = recommendationService;
         }
 
+        [NonAction]
+        private int GetUserId()
+        {
+            var userIdClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+            return userIdClaim != null ? int.Parse(userIdClaim) : 0;
+        }
+
+
         [HttpPost("Calculate")]
         public async Task<IActionResult> GetRecommendation(int SessionID)
         {
@@ -23,7 +31,7 @@ namespace SolarVolt.PresentationLayer.Controllers
             {
 
      
-                var recommendation = await _recommendationService.CalculateRecommendation(SessionID, 1); /// ////// /////////// /////// //// //////// //////// ////// ////// /////// ////// //
+                var recommendation = await _recommendationService.CalculateRecommendation(SessionID, GetUserId()); /// ////// /////////// /////// //// //////// //////// ////// ////// /////// ////// //
 
                 if (recommendation == null)
                 {

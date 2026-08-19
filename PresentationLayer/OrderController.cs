@@ -14,16 +14,21 @@ namespace SolarVolt.PresentationLayer
     {
 
         private readonly OrderService _orderService;
-        int GetUserID() //JWT → ASP.NET يفكه → User Claims → GetUserId() → int userId
-        {
-            return int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
-        }
+     
 
         public OrderController(OrderService orderService)
         {
             _orderService = orderService;
         }
 
+
+
+        [NonAction]
+        private int GetUserId()
+        {
+            var userIdClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+            return userIdClaim != null ? int.Parse(userIdClaim) : 0;
+        }
 
 
 
@@ -145,7 +150,7 @@ namespace SolarVolt.PresentationLayer
             }
 
             // استدعاء الخدمة مع التمرير الصريح للبيانات الأمنية
-            bool isCanceled = await _orderService.CancelOrderAsync(orderId, 1, userRole);           ////////////////////////////////////////////////////////////////////////////////////
+            bool isCanceled = await _orderService.CancelOrderAsync(orderId, GetUserId(), userRole);           ////////////////////////////////////////////////////////////////////////////////////
 
             if (isCanceled)
             {
