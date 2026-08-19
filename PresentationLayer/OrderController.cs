@@ -60,7 +60,7 @@ namespace SolarVolt.PresentationLayer
 
         public async Task<IActionResult> CreateOrder([FromBody] CreateOrderDTo OrderDto)
         {
-            var res = await _orderService.CreateOrder(OrderDto,/*GetUserID()*/1);   ////////////////////////////////////////////////////
+            var res = await _orderService.CreateOrder(OrderDto,GetUserId());   ////////////////////////////////////////////////////
             if (!res.IsValid)
             {
 
@@ -76,9 +76,13 @@ namespace SolarVolt.PresentationLayer
                             return BadRequest(new { message = " our Quanitiy of this product  Less Then Order ", IDs = res.InvalidProductIDs });
 
                         }
+                    default:return StatusCode(500, new { Message = "ERRORR while creating the order" });
                 }
             }
-            return StatusCode(201, new { message = "Order Created Succissfuly" });
+            return StatusCode(201, new { message = "Order Created Succissfuly" ,
+            orderID=res.OrderID,
+            deliverPIN=res.DeliverPin
+            });
 
         }
 

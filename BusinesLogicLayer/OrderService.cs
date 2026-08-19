@@ -217,6 +217,15 @@ namespace BusinesLogicLayer
 
                 await _context.SaveChangesAsync();
                 await transaction.CommitAsync();
+
+
+                return new ValidationResult
+                {
+                    IsValid = true,
+                    OrderID = order.OrderId,
+                    DeliverPin=order.DeliveryPin
+
+                };
             }
             catch (Exception)
             {
@@ -224,7 +233,7 @@ namespace BusinesLogicLayer
                 return new ValidationResult { IsValid = false };
             }
 
-            return new ValidationResult { IsValid = true };
+          
         }
         public async Task<OrderResponseDTo> GetOrderByID(int OrderID)
         {
@@ -354,7 +363,10 @@ namespace BusinesLogicLayer
         public ProductOrQuanitiy enProductOrQuanitiy;
 
         public int ProductID { get; set; }
-
+   
         public List<int> InvalidProductIDs { get; set; } = new List<int>();
+
+        public int OrderID { get; set; }
+        public string DeliverPin { get; set; }
     }
 }
