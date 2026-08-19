@@ -71,7 +71,7 @@ builder.Services.AddScoped<BusinesLogicLayer.ApplianceService>();
 builder.Services.AddScoped<BusinesLogicLayer.OtpService>();
 builder.Services.AddScoped<BusinesLogicLayer.SessionService>();
 builder.Services.AddScoped<BusinesLogicLayer.RecommendationService>();
-
+builder.Services.AddScoped<BusinesLogicLayer.SuggestedSystemService>();
 
 builder.Services.AddHttpClient<SmsService>();
 

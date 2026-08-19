@@ -30,6 +30,8 @@
 
                 public DbSet<OTPCode> OTPCodes { get; set; }
 
+                 public DbSet<SuggestedSystem> SuggestedSystems { get; set; }
+
         //  دالة تجديد حجم العواميد   nvarchar.....
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
