@@ -21,6 +21,7 @@ namespace SolarVolt.PresentationLayer.Controllers
         {
             try
             {
+
      
                 var recommendation = await _recommendationService.CalculateRecommendation(SessionID, 1); /// ////// /////////// /////// //// //////// //////// ////// ////// /////// ////// //
 
