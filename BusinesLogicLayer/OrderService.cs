@@ -76,77 +76,156 @@ namespace BusinesLogicLayer
         {
             return OrderDto.OrderItems.Select(o => o.ProductID).ToList();
         } //تأخذ فقط IDs من الفرونت
+          //v1
+        /*  public async Task<ValidationResult> CreateOrder(CreateOrderDTo OrderDto, int UserID)
+          {
+              List<int> ProductIDsList = GetProductIDsList(OrderDto);
+              //تأخذ فقط IDs من الفرونت
 
+              var Selec tedProducts = await _context.Products
+                  .Where(p => ProductIDsList.Contains(p.ProductId) && !p.IsDeleted)
+                  .ToListAsync(); //تجلب فقط المنتجات المطلوبة (بدون تحميل كل الداتابيز)
+
+              ValidationResult validationProductExists = await IsProductExists(OrderDto, SelectedProducts);
+
+              if (!validationProductExists.IsValid)
+              {
+                  return validationProductExists;
+              }
+
+              ValidationResult validationQuantityAvailable = await IsProductQuantityAvailable(OrderDto, SelectedProducts);
+
+              if (!validationQuantityAvailable.IsValid)
+              {
+                  return validationQuantityAvailable;
+              }
+
+              var transaction=await _context.Database.BeginTransactionAsync();
+              try
+              {
+
+
+                  Order order = new Order()
+                  {
+                      UserID = UserID,
+                      OrderDate = DateTime.Now,
+                      Status = "Pending",
+                      TotalCost = 0, // أو القيمة المحسوبة
+
+                      //  الحقول الجديدة بتنضاف هني
+                      SubTotal = OrderDto.SubTotal, // أو حسب قيمتها عندك
+                      DeliveryFee = 20, // أو OrderDto.DeliveryFee
+                      Discount = OrderDto.Discount,
+                      PaymentMethod = OrderDto.PaymentMethod,
+
+                      // توليد كود الاستلام الـ 4 أرقام تلقائياً
+                      DeliveryPin = new Random().Next(1000, 9999).ToString()
+                  };
+                  await _context.Orders.AddAsync(order); //الContext صار يراقب هذا الكائن     
+                                                         // order.TotalCost += product.Cost * itemDto.Quantity; لاحقا عند هذا السطر بيعدلو من حالو
+
+
+
+                  foreach (var itemDto in OrderDto.OrderItems)
+                  {
+                      var product = SelectedProducts.FirstOrDefault(p => p.ProductId == itemDto.ProductID);//يعني بتقارن كل عناصر اللست مع العنصر المقابل وبتكرر المقارنة كل دورة 
+                      if (product != null)                                                                 //foreach
+                      {
+                          order.TotalCost += product.Cost * itemDto.Quantity;
+                          product.StockQuantity -= itemDto.Quantity;
+                          Order_Item order_Item = new Order_Item()
+                          {
+                              ProductID = product.ProductId,
+                              Quantity = itemDto.Quantity,
+                              Price = product.Cost, // price at sell
+                              order = order
+                          };
+                          await _context.Order_Items.AddAsync(order_Item);
+                      }
+                  }
+                  await _context.SaveChangesAsync();
+                  await transaction.CommitAsync();
+              }
+              catch (Exception)
+              {
+                  await transaction.RollbackAsync();
+                  return new ValidationResult { IsValid = false }; //throw
+              }
+              return new ValidationResult { IsValid = true };
+          }
+        */
+
+        //v2
         public async Task<ValidationResult> CreateOrder(CreateOrderDTo OrderDto, int UserID)
         {
             List<int> ProductIDsList = GetProductIDsList(OrderDto);
-            //تأخذ فقط IDs من الفرونت
 
             var SelectedProducts = await _context.Products
                 .Where(p => ProductIDsList.Contains(p.ProductId) && !p.IsDeleted)
-                .ToListAsync(); //تجلب فقط المنتجات المطلوبة (بدون تحميل كل الداتابيز)
+                .ToListAsync();
 
             ValidationResult validationProductExists = await IsProductExists(OrderDto, SelectedProducts);
-
             if (!validationProductExists.IsValid)
             {
                 return validationProductExists;
             }
 
             ValidationResult validationQuantityAvailable = await IsProductQuantityAvailable(OrderDto, SelectedProducts);
-
             if (!validationQuantityAvailable.IsValid)
             {
                 return validationQuantityAvailable;
             }
 
-            var transaction=await _context.Database.BeginTransactionAsync();
+            var transaction = await _context.Database.BeginTransactionAsync();
             try
             {
-
-
                 Order order = new Order()
                 {
                     UserID = UserID,
                     OrderDate = DateTime.Now,
                     Status = "Pending",
-                    TotalCost = 0,
-
+                    SubTotal = 0, // بنحسبه بالـ loop
+                    DeliveryFee = OrderDto.DeliveryFee,
+                    Discount = OrderDto.Discount,
+                    PaymentMethod = OrderDto.PaymentMethod,
+                    DeliveryPin = new Random().Next(1000, 9999).ToString()
                 };
 
-                await _context.Orders.AddAsync(order); //الContext صار يراقب هذا الكائن     
-                                                       // order.TotalCost += product.Cost * itemDto.Quantity; لاحقا عند هذا السطر بيعدلو من حالو
-
-
+                await _context.Orders.AddAsync(order);
 
                 foreach (var itemDto in OrderDto.OrderItems)
                 {
-                    var product = SelectedProducts.FirstOrDefault(p => p.ProductId == itemDto.ProductID);//يعني بتقارن كل عناصر اللست مع العنصر المقابل وبتكرر المقارنة كل دورة 
-                    if (product != null)                                                                 //foreach
+                    var product = SelectedProducts.FirstOrDefault(p => p.ProductId == itemDto.ProductID);
+                    if (product != null)
                     {
-                        order.TotalCost += product.Cost * itemDto.Quantity;
+                        order.SubTotal += product.Cost * itemDto.Quantity; // تجميع السعر الفرعي
                         product.StockQuantity -= itemDto.Quantity;
+
                         Order_Item order_Item = new Order_Item()
                         {
                             ProductID = product.ProductId,
                             Quantity = itemDto.Quantity,
-                            Price = product.Cost, // price at sell
+                            Price = product.Cost,
                             order = order
                         };
                         await _context.Order_Items.AddAsync(order_Item);
                     }
                 }
+
+                // حساب الإجمالي النهائي بأسلوب صحيح بعد تجميع الـ SubTotal
+                order.TotalCost = (order.SubTotal + order.DeliveryFee) - order.Discount;
+
                 await _context.SaveChangesAsync();
                 await transaction.CommitAsync();
             }
             catch (Exception)
             {
                 await transaction.RollbackAsync();
-                return new ValidationResult { IsValid = false }; //throw
+                return new ValidationResult { IsValid = false };
             }
+
             return new ValidationResult { IsValid = true };
         }
-
         public async Task<OrderResponseDTo> GetOrderByID(int OrderID)
         {
             
