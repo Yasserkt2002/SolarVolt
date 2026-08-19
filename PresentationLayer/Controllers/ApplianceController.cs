@@ -1,4 +1,5 @@
 ﻿using BusinesLogicLayer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SolarVolt.DTOs;
@@ -15,6 +16,7 @@ namespace SolarVolt.PresentationLayer.Controllers
             _applianceService = applianceService;
         }
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> AddNewAppliance([FromBody]AddNewApplianceDTo addNewApplianceDTo)
         {
             bool IsApplianceAddedSuccissfuly=await _applianceService.AddNewAppliance(addNewApplianceDTo);    
