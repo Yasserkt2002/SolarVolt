@@ -9,7 +9,7 @@ namespace SolarVolt.DTOs
         //public string? Email { get; set; }
 
         [Required(ErrorMessage = "كلمة السر مطلوبة")]
-
+        [MinLength(8,ErrorMessage =" غير مسموح اقل من 8 احرف")]
         public string Password { get; set; }
 
         [Required(ErrorMessage = "رقم الهاتف مطلوب")]
