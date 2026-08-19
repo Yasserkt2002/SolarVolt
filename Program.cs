@@ -142,6 +142,15 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
+
+
+builder.Services.AddHttpClient<GeminiService>(client =>
+{
+    client.BaseAddress = new Uri("https://generativelanguage.googleapis.com/");
+});
+
+
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
