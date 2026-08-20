@@ -5,7 +5,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using SolarVolt.BusinesLogicLayer;
-using SolarVolt.Services;
 using System.Security.Claims;
 using System.Text;
 
