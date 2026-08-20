@@ -5,7 +5,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace SolarVolt.Services
+namespace BusinesLogicLayer
 {
     public class DashboardService
     {
