@@ -32,6 +32,8 @@
 
                  public DbSet<SuggestedSystem> SuggestedSystems { get; set; }
 
+                 public DbSet<Favorite> Favorites { get; set; }
+
         //  دالة تجديد حجم العواميد   nvarchar.....
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
