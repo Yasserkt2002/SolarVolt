@@ -60,7 +60,7 @@ namespace SolarVolt.PresentationLayer.Controllers
         [Authorize(Roles = "Admin,Client")]
         public async Task<IActionResult> GetAllProduct(int? CategoryID = null,string? search=null)    //(int? CategoryID = null)  <=== query param
         {
-            var res=await  _productService.GetAllProducts(CategoryID);
+            var res=await  _productService.GetAllProducts(CategoryID, search);
             if (res.Any())
             {
                 return Ok(new { Message="this is a list of products" ,Data=res});
