@@ -238,7 +238,7 @@ namespace BusinesLogicLayer
         public async Task<OrderResponseDTo> GetOrderByID(int OrderID)
         {
             
-            var orderSelected =await _context.Orders.Include(i=>i.Order_Items_List).FirstOrDefaultAsync(o=>o.OrderId== OrderID&&o.UserID== 1   /*     userID     */);   ///////////////////////////////////////////////////////////////////////////////////////////////////userID
+            var orderSelected =await _context.Orders.Include(i=>i.Order_Items_List).Include(o=>o.user).FirstOrDefaultAsync(o=>o.OrderId== OrderID);            /////////////////userID have been delet it
             if (orderSelected == null)
             {
                 return null;
@@ -248,14 +248,14 @@ namespace BusinesLogicLayer
                 OrderId = orderSelected.OrderId,
                 OrderDate = orderSelected.OrderDate,
                 TotalCost = orderSelected.TotalCost,
-                Status=orderSelected.Status,
-
+                Status = orderSelected.Status,
+                CustomerName = orderSelected.user?.FullName,
 
                 Order_Items_List = orderSelected.Order_Items_List.Select(o => new OrderItemResponseDTo()
                 {
-                    ProductID = o.ProductID,    
-                    Quantity = o.Quantity,  
-                    Price=o.Price,
+                    ProductID = o.ProductID,
+                    Quantity = o.Quantity,
+                    Price = o.Price,
                 }).ToList()
 
             };
@@ -264,12 +264,13 @@ namespace BusinesLogicLayer
 
         public async Task<List<GetAllUserOrdersDTo>> getAllUserOrders()
         {
-            var AllOrders = await _context.Orders.Where(o=>o.UserID== 1    /*     userID     */).Select(o => new GetAllUserOrdersDTo()      ///////////////////////////////////////////////////////////////////////////////////////////////////userID
+            var AllOrders = await _context.Orders.Select(o => new GetAllUserOrdersDTo()     
             {
                 OrderId = o.OrderId,
                 OrderDate = o.OrderDate,
                 TotalCost = o.TotalCost,
                 Status=o.Status,
+                CustomerName=o.user.FullName,
             }).ToListAsync();
             if (!AllOrders.Any())
             {

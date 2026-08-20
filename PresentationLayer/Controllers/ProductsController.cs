@@ -58,7 +58,7 @@ namespace SolarVolt.PresentationLayer.Controllers
         
         [HttpGet]  //https://t.me/c/3394009212/2/121    //  [HttpGet("{CategoryID}")] ليش مو       //https://t.me/c/3394009212/2/122
         [Authorize(Roles = "Admin,Client")]
-        public async Task<IActionResult> GetAllProduct(int? CategoryID = null)    //(int? CategoryID = null)  <=== query param
+        public async Task<IActionResult> GetAllProduct(int? CategoryID = null,string? search=null)    //(int? CategoryID = null)  <=== query param
         {
             var res=await  _productService.GetAllProducts(CategoryID);
             if (res.Any())

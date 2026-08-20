@@ -12,5 +12,7 @@ namespace SolarVolt.DTOs
 
         public List<OrderItemResponseDTo> Order_Items_List { get; set; } = new List<OrderItemResponseDTo>();
 
+        public string CustomerName { get; set; }
+    
     }
 }

@@ -7,5 +7,7 @@
 
         public string Status { get; set; }
         public decimal TotalCost { get; set; }
+
+        public string CustomerName { get; set; }
     }
 }
